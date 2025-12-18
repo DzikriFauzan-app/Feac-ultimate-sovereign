@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import { Consciousness, SystemState } from './core/consciousness';
 import { AuditEngine } from './core/audit_engine';
 
@@ -9,7 +10,15 @@ const auditor = new AuditEngine();
 
 app.use(cors());
 app.use(express.json());
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'ui/views'));
 
+// Dashboard Route
+app.get('/', (req, res) => {
+    res.render('dashboard');
+});
+
+// API Pulse
 app.get('/system/pulse', (req, res) => {
     const report = auditor.generateReport();
     res.json({
@@ -23,5 +32,5 @@ app.get('/system/pulse', (req, res) => {
 const PORT = 3001;
 app.listen(PORT, () => {
     brain.updateState(SystemState.IDLE);
-    console.log(`[FEAC_SOVEREIGN] MONITORING ACTIVE ON PORT ${PORT}`);
+    console.log(`[FEAC_SOVEREIGN] COMMAND CENTER ONLINE: http://localhost:${PORT}`);
 });

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FEAC | SOVEREIGN COMMAND</title>
+    <style>
+        body { background: #0a0a0b; color: #e0e0e0; font-family: 'Courier New', monospace; margin: 0; padding: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { border: 1px solid #333; padding: 20px; background: #111; border-radius: 5px; }
+        .gold { color: #d4af37; font-weight: bold; }
+        .pulse { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .log-box { background: #000; height: 200px; overflow-y: scroll; padding: 10px; font-size: 12px; color: #00ff00; }
+        h1 { border-bottom: 2px solid #d4af37; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>FEAC ULTIMATE <span class="gold">SOVEREIGN</span> v1.0</h1>
+    <div class="grid">
+        <div class="card">
+            <h3>System Status: <span id="status" class="gold">CONNECTING...</span></h3>
+            <p>Uptime: <span id="uptime">0</span>s</p>
+            <p>Aries Link: <span class="gold">ACTIVE</span></p>
+            <p>Neo Engine: <span id="neo">STANDBY</span></p>
+        </div>
+        <div class="card">
+            <h3>Audit Report</h3>
+            <div id="audit-logs" class="log-box"></div>
+        </div>
+    </div>
+    <script>
+        async function updatePulse() {
+            const res = await fetch('/system/pulse');
+            const data = await res.json();
+            document.getElementById('status').innerText = data.status.state;
+            document.getElementById('uptime').innerText = Math.floor(data.uptime);
+            
+            const auditBox = document.getElementById('audit-logs');
+            auditBox.innerHTML = data.health_report.criticalAlerts.map(l => `<div>> ${l}</div>`).join('');
+        }
+        setInterval(updatePulse, 2000);
+    </script>
+</body>
+</html>
