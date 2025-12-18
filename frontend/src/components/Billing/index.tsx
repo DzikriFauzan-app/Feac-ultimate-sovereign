@@ -1,4 +1,3 @@
-import React from 'react';
 import { Check, Crown, ShieldCheck } from 'lucide-react';
 
 const Billing = ({ currentTier = 'OWNER' }: { currentTier?: string }) => {

@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Github, Search, RefreshCw, Plus, Terminal } from 'lucide-react';
+import { Search, RefreshCw, Plus } from 'lucide-react';
 
 const RepositoryManager = () => {
   const [repos, setRepos] = useState([{ id: 1, name: 'Feac-ultimate-sovereign', url: '', token: '' }]);
@@ -13,7 +12,7 @@ const RepositoryManager = () => {
         <button onClick={addRepo} className="p-2 bg-blue-600 rounded-xl text-white active:scale-90"><Plus /></button>
       </div>
 
-      {repos.map((repo, idx) => (
+      {repos.map((repo) => (
         <div key={repo.id} className="bg-[#111821] border border-gray-800 rounded-2xl p-5 space-y-4">
           <input className="w-full bg-black/40 border border-gray-800 p-3 rounded-xl text-xs text-white" placeholder="Repository Name (e.g. My-Project)" />
           <input className="w-full bg-black/40 border border-gray-800 p-3 rounded-xl text-xs text-blue-400 font-mono" placeholder="https://github.com/user/repo" />

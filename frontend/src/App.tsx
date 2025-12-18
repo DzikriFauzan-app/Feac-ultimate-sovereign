@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Menu, Send, Plus, Paperclip } from 'lucide-react';
+import { Menu, Send, Paperclip } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import Billing from './components/Billing';
@@ -13,7 +13,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [chatMsg, setChatMsg] = useState('');
-  const [userRole, setUserRole] = useState('OWNER');
+  const [userRole] = useState('OWNER');
   const [chatHistory, setChatHistory] = useState([
     { role: 'aries', text: 'Sovereign identity verified. Input instructions or upload files for multi-engine processing.' }
   ]);

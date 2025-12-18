@@ -1,4 +1,3 @@
-import React from 'react';
 import { Activity, Cpu, Zap } from 'lucide-react';
 
 const NeoGrid = () => {

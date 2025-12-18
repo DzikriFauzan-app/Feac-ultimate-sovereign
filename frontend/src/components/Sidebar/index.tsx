@@ -1,7 +1,6 @@
-import React from 'react';
 import { 
   LayoutDashboard, Box, Github, CreditCard, Brain, 
-  Terminal, Cpu, Zap, X, Layers 
+  Terminal, Cpu, X, Layers 
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, setIsOpen, activeTab, setActiveTab, userRole }: any) => {

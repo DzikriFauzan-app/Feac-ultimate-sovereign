@@ -1,5 +1,4 @@
-import React from 'react';
-import { ShieldAlert, Zap, Terminal, Activity, ChevronRight, Crown } from 'lucide-react';
+import { ShieldAlert, Terminal, ChevronRight, Crown } from 'lucide-react';
 
 const Dashboard = ({ userRole = 'OWNER' }: { userRole?: string }) => {
   return (

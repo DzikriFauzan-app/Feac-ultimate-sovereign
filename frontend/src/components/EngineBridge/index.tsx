@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { Box, Code2, RefreshCw, Plus, FolderOpen } from 'lucide-react';
+import { Box, Code2, RefreshCw, Plus } from 'lucide-react';
 
 const EngineBridge = () => {
-  const [projects, setProjects] = useState([
+  const [projects] = useState([
     { name: 'Sovereign-Shooter', engine: 'Godot', status: 'LINKED' }
   ]);
 

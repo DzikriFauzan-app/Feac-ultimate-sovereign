@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 
 const TermuxInternal = () => {
   const [history, setHistory] = useState(['Welcome to FEAC Internal Termux v1.0', 'Sovereign Core: Connected']);
