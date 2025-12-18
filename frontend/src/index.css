@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sov-bg: #0a0f14;
+  --color-sov-card: #111821;
+  --color-sov-emerald: #10b981;
+  --color-sov-gold: #d4af37;
+  --color-sov-border: #1e293b;
+}
+
+body {
+  background-color: var(--color-sov-bg);
+  color: #e2e8f0;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}

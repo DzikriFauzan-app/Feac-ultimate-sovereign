@@ -1,45 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FEAC | SOVEREIGN COMMAND</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { background: #0a0a0b; color: #e0e0e0; font-family: 'Courier New', monospace; margin: 0; padding: 20px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { border: 1px solid #333; padding: 20px; background: #111; border-radius: 5px; }
-        .gold { color: #d4af37; font-weight: bold; }
-        .pulse { animation: pulse-red 2s infinite; }
-        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        .log-box { background: #000; height: 200px; overflow-y: scroll; padding: 10px; font-size: 12px; color: #00ff00; }
-        h1 { border-bottom: 2px solid #d4af37; padding-bottom: 10px; }
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        body { font-family: 'JetBrains Mono', monospace; background-color: #050505; }
+        .glass { background: rgba(15, 15, 15, 0.8); backdrop-filter: blur(10px); border: 1px solid #1f2937; }
+        .glow-gold { text-shadow: 0 0 10px #d4af37; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #d4af37; }
     </style>
 </head>
-<body>
-    <h1>FEAC ULTIMATE <span class="gold">SOVEREIGN</span> v1.0</h1>
-    <div class="grid">
-        <div class="card">
-            <h3>System Status: <span id="status" class="gold">CONNECTING...</span></h3>
-            <p>Uptime: <span id="uptime">0</span>s</p>
-            <p>Aries Link: <span class="gold">ACTIVE</span></p>
-            <p>Neo Engine: <span id="neo">STANDBY</span></p>
+<body class="text-gray-300 p-6">
+    <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
+        <div>
+            <h1 class="text-3xl font-bold text-white tracking-widest glow-gold">FEAC <span class="text-[#d4af37]">SOVEREIGN</span></h1>
+            <p class="text-xs text-gray-500 mt-1">OPERATIONAL PROTOCOL: <span class="text-green-500">ACTIVE</span></p>
         </div>
-        <div class="card">
-            <h3>Audit Report</h3>
-            <div id="audit-logs" class="log-box"></div>
+        <div id="clock" class="text-xl font-bold text-white">00:00:00</div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass p-6 rounded-lg border-l-4 border-[#d4af37]">
+            <h2 class="text-lg font-bold uppercase mb-4">Vitality</h2>
+            <p class="text-xs mb-1 text-gray-400">STATE: <span id="state-text" class="text-[#d4af37]">IDLE</span></p>
+            <p class="text-[10px] text-gray-600">UPTIME: <span id="uptime">0</span>s</p>
+        </div>
+
+        <div class="glass p-6 rounded-lg col-span-2">
+            <h2 class="text-lg font-bold uppercase mb-4">Command Console</h2>
+            <div class="grid grid-cols-2 gap-4 text-[10px]">
+                <button onclick="executeTask('push')" class="border border-gray-800 p-2 hover:border-[#d4af37]">PUSH CLOUD</button>
+                <button onclick="executeTask('audit')" class="border border-gray-800 p-2 hover:border-green-500">RUN AUDIT</button>
+                <button onclick="executeTask('rebuild')" class="border border-gray-800 p-2 hover:border-blue-500">REBUILD SYSTEM</button>
+                <button onclick="executeTask('aries')" class="border border-gray-800 p-2 hover:border-purple-500">SYNC ARIES</button>
+            </div>
+        </div>
+
+        <div class="glass p-6 rounded-lg col-span-3 h-64 overflow-hidden">
+            <h2 class="text-sm font-bold uppercase mb-2">Audit Feed</h2>
+            <div id="log-feed" class="text-[10px] space-y-1 font-mono text-gray-500"></div>
         </div>
     </div>
+
     <script>
-        async function updatePulse() {
+        lucide.createIcons();
+        async function fetchPulse() {
             const res = await fetch('/system/pulse');
             const data = await res.json();
-            document.getElementById('status').innerText = data.status.state;
             document.getElementById('uptime').innerText = Math.floor(data.uptime);
-            
-            const auditBox = document.getElementById('audit-logs');
-            auditBox.innerHTML = data.health_report.criticalAlerts.map(l => `<div>> ${l}</div>`).join('');
+            document.getElementById('state-text').innerText = data.status.state;
+            document.getElementById('log-feed').innerHTML = data.health_report.criticalAlerts.map(l => `<div>> ${l}</div>`).join('');
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
         }
-        setInterval(updatePulse, 2000);
+
+        async function executeTask(task) {
+            const res = await fetch('/system/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task })
+            });
+            const data = await res.json();
+            console.log("FEAC Response:", data);
+        }
+        setInterval(fetchPulse, 2000);
     </script>
 </body>
 </html>
