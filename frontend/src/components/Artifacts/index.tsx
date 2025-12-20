@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Terminal, Check, X, PencilLine, ShieldAlert, Download } from 'lucide-react';
+import {  ShieldAlert, Download } from 'lucide-react';
 
 const Artifacts = () => {
   const [designPrompt, setDesignPrompt] = useState('');
