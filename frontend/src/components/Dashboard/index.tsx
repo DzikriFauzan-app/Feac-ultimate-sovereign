@@ -66,7 +66,7 @@ const Dashboard = ({ userRole = 'OWNER' }: { userRole?: string }) => {
         </div>
         <div className="bg-black/60 p-4 h-32 rounded-xl border border-gray-900 font-mono text-[10px] overflow-y-auto text-emerald-500/70 space-y-1 custom-scrollbar">
           <p>&gt; [08:42:11] FEAC Core Initialized</p>
-          <p className="text-emerald-900">&gt; Connected: ws://localhost:3000</p>
+          <p className="text-emerald-900">&gt; Connected: ws://10.4.35.107:3000</p>
           <p className="text-blue-900">&gt; Protocol: Aries-v2 Active</p>
           <p className="animate-pulse text-emerald-400/50 mt-2">&gt; Awaiting SuperKey Command...</p>
         </div>
