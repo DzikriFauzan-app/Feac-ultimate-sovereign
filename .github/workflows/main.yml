@@ -10,10 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js (v22+)
+      - name: Set up Node.js (v22)
         uses: actions/setup-node@v4
         with:
-          node-version: '22' # Mengikuti persyaratan Capacitor CLI
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
@@ -27,10 +27,10 @@ jobs:
           cd frontend
           npm run build
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21 (Required for Capacitor Latest)
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21' # Diubah dari 17 ke 21
           distribution: 'zulu'
 
       - name: Set up Android SDK
