@@ -30,7 +30,7 @@ jobs:
       - name: Build Android APK
         run: |
           cd frontend
-          # Pastikan menggunakan bin lokal yang versinya sudah sesuai
+          # Menggunakan binary lokal untuk memastikan versi NodeJS sesuai
           ./node_modules/.bin/cap sync android
           cd android
           chmod +x gradlew
