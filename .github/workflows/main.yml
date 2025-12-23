@@ -1,53 +1,18 @@
-name: FEAC Sovereign APK Build
-
+name: FEAC Sovereign OTA
 on:
   push:
     branches: [ main ]
-
 jobs:
-  build_apk:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          node-version: '22.12.0'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '21' # Diupgrade dari 17 ke 21
-
-      - name: Install Dependencies
-        run: |
-          cd frontend
-          npm install
-          
-      - name: Build Web Assets
-        run: |
-          cd frontend
-          npm run build || npx vite build
-
-      - name: Build Android Debug APK
-        run: |
-          cd frontend
-          node -v
-          java -version
-          npx --yes @capacitor/cli@latest init FEAC com.dzkrifauzan.feac --web-dir dist || true
-          npx --yes @capacitor/cli@latest add android || true
-          npx --yes @capacitor/cli@latest sync android
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
-
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: FEAC-Sovereign-Debug-APK
-          path: frontend/android/app/build/outputs/apk/debug/app-debug.apk
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist

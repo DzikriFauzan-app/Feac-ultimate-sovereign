@@ -45,6 +45,8 @@ const App = () => {
         <button onClick={() => setActiveTab('dashboard')} style={{ background: activeTab === 'dashboard' ? '#222' : 'transparent', color: '#fff', border: '1px solid #333', padding: '10px' }}>DASHBOARD</button>
         <button onClick={() => setActiveTab('emergent')} style={{ background: activeTab === 'emergent' ? '#222' : 'transparent', color: '#fff', border: '1px solid #333', padding: '10px' }}>EMERGENT</button>
         <button onClick={() => setActiveTab('bridge')} style={{ background: activeTab === 'bridge' ? '#222' : 'transparent', color: '#fff', border: '1px solid #333', padding: '10px' }}>BRIDGE</button>
+<button className="nav-button">EMERGENT</button>
+<button className="nav-button">EMERGENT</button>
       </div>
 
       <div style={{ border: '1px solid #222', padding: '15px', borderRadius: '5px', minHeight: '300px' }}>
