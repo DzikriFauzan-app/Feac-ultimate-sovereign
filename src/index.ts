@@ -1,58 +1,35 @@
-import express, { Request, Response, NextFunction } from 'express';
-import axios, { AxiosError } from 'axios';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import express from 'express';
+import axios from 'axios';
 
 const app = express();
-// Kita gunakan PORT 3001 sesuai struktur asli FEAC kamu
-const PORT = 3001; 
-const ARIES_API_URL = 'http://10.159.189.152:3000';
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000;
-
 app.use(express.json());
 
-async function retryWithBackoff<T>(fn: () => Promise<T>, config: any): Promise<T> {
-  let lastError: Error | null = null;
-  for (let attempt = 1; attempt <= config.maxRetries; attempt++) {
+const ARIES_URL = 'http://127.0.0.1:3000/api/auth/validate-key';
+
+app.post('/api/validate-key', async (req, res) => {
     try {
-      return await fn();
-    } catch (error) {
-      lastError = error as Error;
-      if (attempt < config.maxRetries) {
-        const delayTime = config.delayMs * Math.pow(2, attempt - 1);
-        console.warn(`Attempt ${attempt} failed. Retrying in ${delayTime}ms...`);
-        await new Promise(resolve => setTimeout(resolve, delayTime));
-      }
+        const { apiKey } = req.body;
+        console.log("🔄 Forwarding Owner Key to Aries...");
+
+        const response = await axios.post(ARIES_URL, { apiKey }, { timeout: 5000 });
+        
+        console.log("✅ Aries Response:", response.data.status);
+        res.status(200).json(response.data);
+    } catch (error: any) {
+        // Menggunakan : any atau pengecekan pesan untuk menghindari error TS18046
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error("❌ Bridge Error:", errorMessage);
+        
+        res.status(503).json({ 
+            success: false, 
+            status: "BRIDGE_CONNECTION_FAILED",
+            message: errorMessage
+        });
     }
-  }
-  throw new Error(`Failed after ${config.maxRetries} attempts.`);
-}
-
-app.post('/api/validate-key', async (req: Request, res: Response) => {
-  try {
-    const { apiKey } = req.body;
-    if (!apiKey) return res.status(400).json({ isValid: false, message: 'API key is required' });
-
-    const result = await retryWithBackoff(async () => {
-      const response = await axios.post(`${ARIES_API_URL}/api/auth/validate-key`, { apiKey }, { timeout: 5000 });
-      return {
-        isValid: response.data.success === true,
-        message: 'API key validation successful',
-        level: response.data.level
-      };
-    }, { maxRetries: MAX_RETRIES, delayMs: RETRY_DELAY });
-
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({ isValid: false, message: 'Bridge to Aries Failed' });
-  }
 });
 
-app.get('/health', (req, res) => res.json({ status: 'FEAC ONLINE' }));
+app.get('/health', (req, res) => res.json({ status: "BRIDGE_ACTIVE" }));
 
-app.listen(PORT, () => {
-  console.log(`🏛️ FEAC COMMAND SERVER RUNNING ON PORT ${PORT}`);
-  console.log(`🔗 CONNECTED TO ARIES AT ${ARIES_API_URL}`);
+app.listen(3001, '0.0.0.0', () => {
+    console.log('🏛️ FEAC BRIDGE ONLINE ON PORT 3001');
 });
