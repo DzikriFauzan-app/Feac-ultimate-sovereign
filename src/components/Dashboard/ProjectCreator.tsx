@@ -16,7 +16,7 @@ const ProjectCreator = () => {
     sfx.playInitialize();
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8080/api/task/execute', {
+      const res = await fetch('http://10.159.189.152:8080/api/task/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ project: name, type: type, desc: `Inisialisasi Proyek ${name}` })

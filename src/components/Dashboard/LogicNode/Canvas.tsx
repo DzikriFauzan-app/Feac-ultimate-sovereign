@@ -51,7 +51,7 @@ const Canvas = () => {
   const runLogic = async () => {
     sfx.playInitialize();
     try {
-      const response = await fetch('http://localhost:8080/api/logic/run', {
+      const response = await fetch('http://10.159.189.152:8080/api/logic/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

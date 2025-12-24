@@ -15,7 +15,7 @@ const AgentChat = () => {
     setHistory(prev => [...prev, userMsg]);
     
     try {
-      const res = await fetch('http://localhost:8080/api/agent/chat', {
+      const res = await fetch('http://10.159.189.152:8080/api/agent/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ agent: target, message: msg })

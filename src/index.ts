@@ -4,7 +4,7 @@ import axios from 'axios';
 const app = express();
 app.use(express.json());
 
-const ARIES_URL = 'http://127.0.0.1:3000/api/auth/validate-key';
+const ARIES_URL = 'http://0.0.0.0:3000/api/auth/validate-key';
 
 app.post('/api/validate-key', async (req, res) => {
     try {

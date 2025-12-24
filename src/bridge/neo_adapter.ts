@@ -2,7 +2,7 @@ import axios from 'axios';
 import { feacLog } from '../utils/feacLogger';
 
 export class NeoAdapter {
-    private static readonly NEO_URL = "http://127.0.0.1:5000/render"; 
+    private static readonly NEO_URL = "http://10.159.189.152:5000/render"; 
 
     static async dispatchRenderTask(taskId: string, payload: any) {
         feacLog("BRIDGE", `Connecting to Neo Engine for Task: ${taskId}`);

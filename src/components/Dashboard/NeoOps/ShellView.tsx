@@ -6,7 +6,7 @@ const ShellView = () => {
   const logEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const eventSource = new EventSource('http://localhost:8080/api/logs');
+    const eventSource = new EventSource('http://10.159.189.152:8080/api/logs');
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);

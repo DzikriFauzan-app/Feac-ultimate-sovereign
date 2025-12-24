@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export class AriesGateway {
-    private static readonly ARIES_ENDPOINT = "http://127.0.0.1:3333/v1/brain";
+    private static readonly ARIES_ENDPOINT = "http://10.159.189.152:3333/v1/brain";
 
     static async requestCognition(prompt: string, context: any) {
         try {

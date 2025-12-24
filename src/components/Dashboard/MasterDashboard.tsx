@@ -7,7 +7,7 @@ const MasterDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/dashboard/stats');
+        const res = await fetch('http://10.159.189.152:8080/api/dashboard/stats');
         const data = await res.json();
         setStats(data);
       } catch (err) { console.error("Sync Error"); }

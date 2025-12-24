@@ -6,7 +6,7 @@ const ResourceMonitor = () => {
   const [currentStats, setCurrentStats] = useState({ ram: 0, cpu: 0, temp: 0 });
 
   useEffect(() => {
-    const eventSource = new EventSource('http://localhost:8080/api/logs');
+    const eventSource = new EventSource('http://10.159.189.152:8080/api/logs');
     eventSource.onmessage = (event) => {
       const payload = JSON.parse(event.data);
       const stats = payload.stats;
