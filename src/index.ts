@@ -30,6 +30,18 @@ app.post('/api/validate-key', async (req, res) => {
 
 app.get('/health', (req, res) => res.json({ status: "BRIDGE_ACTIVE" }));
 
+
+// --- ARIES AUTH SYSTEM ---
+app.post('/auth/verify', (req, res) => {
+    const { key } = req.body;
+    if (key === 'aries-owner-33d7d4d4224cdb40b0aef205b64f76414efb2f9bc70ee1f1') {
+        console.log("🔓 Owner Access Granted");
+        return res.json({ status: 'authorized', role: 'OWNER', scope: '*' });
+    }
+    console.log("🔒 Unauthorized Access Attempt");
+    return res.status(401).json({ status: 'unauthorized' });
+});
+
 app.listen(3001, '0.0.0.0', () => {
     console.log('🏛️ FEAC BRIDGE ONLINE ON PORT 3001');
 });
