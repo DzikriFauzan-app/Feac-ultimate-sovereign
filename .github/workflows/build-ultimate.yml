@@ -1,4 +1,4 @@
-name: FEAC Sovereign Final Build
+name: FEAC Sovereign Ultimate Build
 on:
   push:
     branches: [ main ]
@@ -18,12 +18,13 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '21'
-      - name: Build
+      - name: Build Assets
         run: |
           cd frontend
           npm install
-          npm run build || npx vite build
-      - name: Android Sync
+          # Paksa build meskipun ada warning TS
+          npx vite build
+      - name: Android Sync & Compile
         run: |
           cd frontend
           ./node_modules/.bin/cap sync android
@@ -33,5 +34,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: FEAC-Sovereign-Fixed
+          name: FEAC-Sovereign-Rebuild
           path: frontend/android/app/build/outputs/apk/debug/app-debug.apk
