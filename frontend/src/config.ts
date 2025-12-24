@@ -1,1 +1,4 @@
-export const API_URL = 'http://10.4.35.107:3000';
+export const CONFIG = {
+  ARIES_URL: 'http://0.0.0.0:3000',
+  NEO_URL: 'http://0.0.0.0:8080'
+};
