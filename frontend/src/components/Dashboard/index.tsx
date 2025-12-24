@@ -9,7 +9,7 @@ const Dashboard = () => {
 
   const handleSovereignEntry = async () => {
     try {
-      const response = await fetch('http://10.4.35.107:3000/api/validate-key', {
+      const response = await fetch('http://10.159.189.152:3000/api/validate-key', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key })

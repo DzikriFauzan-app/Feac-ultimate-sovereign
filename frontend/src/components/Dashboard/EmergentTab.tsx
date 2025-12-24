@@ -7,7 +7,7 @@ const EmergentTab = () => {
 
   const scanRepo = async () => {
     setIsScanning(true);
-    const res = await fetch('http://10.4.35.107:3000/api/emergent/scan');
+    const res = await fetch('http://10.159.189.152:3000/api/emergent/scan');
     const json = await res.json();
     setProposals(json.data);
     setIsScanning(false);
@@ -15,7 +15,7 @@ const EmergentTab = () => {
 
   const handleApprove = async (issue) => {
     // Pindah ke mode auto-fix
-    await fetch('http://10.4.35.107:3000/api/emergent/approve', {
+    await fetch('http://10.159.189.152:3000/api/emergent/approve', {
       method: 'POST',
       body: JSON.stringify({ issue })
     });
