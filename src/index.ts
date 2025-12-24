@@ -1,61 +1,58 @@
-import express from 'express';
-import cors from 'cors';
-import path from 'path';
-import { exec } from 'child_process';
-import { Consciousness, SystemState } from './core/consciousness';
-import { AuditEngine } from './core/audit_engine';
-import { feacLog } from './utils/feacLogger';
+import express, { Request, Response, NextFunction } from 'express';
+import axios, { AxiosError } from 'axios';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
-const brain = new Consciousness();
-const auditor = new AuditEngine();
+// Kita gunakan PORT 3001 sesuai struktur asli FEAC kamu
+const PORT = 3001; 
+const ARIES_API_URL = 'http://10.159.189.152:3000';
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
 
-app.use(cors());
 app.use(express.json());
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'ui/views'));
 
-// 1. Dashboard Route
-app.get('/', (req, res) => {
-    res.render('dashboard');
-});
-
-// 2. Pulse API (Data untuk UI)
-app.get('/system/pulse', (req, res) => {
-    const report = auditor.generateReport();
-    res.json({
-        identity: "FEAC_ULTIMATE_SOVEREIGN",
-        status: brain.getState(),
-        health_report: report,
-        uptime: process.uptime()
-    });
-});
-
-// 3. Action Console API (Menerima perintah dari UI)
-app.post('/system/execute', (req: any, res: any) => {
-    const { task } = req.body;
-    feacLog("COMMAND", `Received UI Instruction: ${task}`);
-
-    let command = "";
-    switch(task) {
-        case 'push': command = "bash scripts/sovereign_push.sh 'Manual UI Sync'"; break;
-        case 'audit': command = "npx ts-node src/tests/audit_test.ts"; break;
-        case 'rebuild': command = "npm install && npx tsc"; break;
-        default: command = "echo 'Unknown Task'";
+async function retryWithBackoff<T>(fn: () => Promise<T>, config: any): Promise<T> {
+  let lastError: Error | null = null;
+  for (let attempt = 1; attempt <= config.maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error as Error;
+      if (attempt < config.maxRetries) {
+        const delayTime = config.delayMs * Math.pow(2, attempt - 1);
+        console.warn(`Attempt ${attempt} failed. Retrying in ${delayTime}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delayTime));
+      }
     }
+  }
+  throw new Error(`Failed after ${config.maxRetries} attempts.`);
+}
 
-    exec(command, (error, stdout, stderr) => {
-        if (error) {
-            feacLog("CRITICAL", `Task ${task} Failed: ${error.message}`);
-            return res.status(500).json({ status: "ERROR", message: error.message });
-        }
-        feacLog("COMMAND", `Task ${task} Executed Successfully`);
-        res.json({ status: "SUCCESS", output: stdout });
-    });
+app.post('/api/validate-key', async (req: Request, res: Response) => {
+  try {
+    const { apiKey } = req.body;
+    if (!apiKey) return res.status(400).json({ isValid: false, message: 'API key is required' });
+
+    const result = await retryWithBackoff(async () => {
+      const response = await axios.post(`${ARIES_API_URL}/api/auth/validate-key`, { apiKey }, { timeout: 5000 });
+      return {
+        isValid: response.data.success === true,
+        message: 'API key validation successful',
+        level: response.data.level
+      };
+    }, { maxRetries: MAX_RETRIES, delayMs: RETRY_DELAY });
+
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ isValid: false, message: 'Bridge to Aries Failed' });
+  }
 });
 
-const PORT = 3001;
+app.get('/health', (req, res) => res.json({ status: 'FEAC ONLINE' }));
+
 app.listen(PORT, () => {
-    brain.updateState(SystemState.IDLE);
-    console.log(`\x1b[33m%s\x1b[0m`, `[FEAC_SOVEREIGN] COMMAND CENTER ONLINE: http://localhost:${PORT}`);
+  console.log(`🏛️ FEAC COMMAND SERVER RUNNING ON PORT ${PORT}`);
+  console.log(`🔗 CONNECTED TO ARIES AT ${ARIES_API_URL}`);
 });
