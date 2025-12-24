@@ -22,7 +22,7 @@ jobs:
         run: |
           cd frontend
           npm install
-          # Paksa build meskipun ada warning TS
+          # Lewati tsc, langsung build dengan vite agar tidak error TS
           npx vite build
       - name: Android Sync & Compile
         run: |

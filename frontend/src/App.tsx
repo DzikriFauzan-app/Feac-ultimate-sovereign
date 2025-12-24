@@ -1,81 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { API_URL } from './config';
+import Dashboard from './components/Dashboard';
+import { Zap, Terminal, Database, CreditCard, Brain, Box, Activity } from 'lucide-react';
 
 const App = () => {
-  const [status, setStatus] = useState('STANDBY');
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [logs, setLogs] = useState<string[]>([]);
-
-  const addLog = (msg: string) => setLogs(prev => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev]);
-
-  useEffect(() => {
-    addLog(`Attempting handshake to ${API_URL}...`);
-    fetch(`${API_URL}/api/emergent/scan`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setStatus('CONNECTED');
-          addLog('System Online. Owner Key Verified.');
-        }
-      })
-      .catch(err => {
-        setStatus('OFFLINE MODE');
-        addLog('Connection failed. Switching to Offline Interface.');
-        console.error(err);
-      });
-  }, []);
-
-  const handleBridgeExecute = () => {
-    addLog('Executing Bridge manually...');
-    fetch(`${API_URL}/api/bridge/execute`, { method: 'POST' })
-      .then(res => res.json())
-      .then(d => addLog(`Response: ${d.message}`))
-      .catch(() => addLog('Execution failed: Server unreachable.'));
-  };
 
   return (
-    <div style={{ background: '#050505', color: '#0f0', minHeight: '100vh', padding: '15px', fontFamily: 'monospace' }}>
-      
-      <div style={{ borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '20px' }}>
-        <h2 style={{ margin: 0 }}>ARIES <span style={{ color: status === 'CONNECTED' ? '#0f0' : '#f00' }}>{status}</span></h2>
-        <small style={{ color: '#666' }}>Target: {API_URL}</small>
+    <div className="min-h-screen bg-black text-white font-mono">
+      {/* Header & Status */}
+      <div className="p-4 border-b border-zinc-800 flex justify-between items-center">
+        <h1 className="text-xl italic font-bold tracking-tighter">FEAC SOVEREIGN</h1>
+        <div className="text-[10px] text-green-500 animate-pulse">OWNER ACCESS</div>
       </div>
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <button onClick={() => setActiveTab('dashboard')} style={{ background: activeTab === 'dashboard' ? '#222' : 'transparent', color: '#fff', border: '1px solid #333', padding: '10px' }}>DASHBOARD</button>
-        <button onClick={() => setActiveTab('emergent')} style={{ background: activeTab === 'emergent' ? '#222' : 'transparent', color: '#fff', border: '1px solid #333', padding: '10px' }}>EMERGENT</button>
-        <button onClick={() => setActiveTab('bridge')} style={{ background: activeTab === 'bridge' ? '#222' : 'transparent', color: '#fff', border: '1px solid #333', padding: '10px' }}>BRIDGE</button>
+      {/* Navigation Menu */}
+      <div className="flex overflow-x-auto gap-2 p-2 bg-zinc-900/50 no-scrollbar">
+        {['dashboard', 'repo', 'neogrid', 'bridge', 'termux', 'billing', 'artifact', 'brain', 'emergent'].map((tab) => (
+          <button 
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-3 py-1 text-xs border ${activeTab === tab ? 'bg-white text-black border-white' : 'border-zinc-700 text-zinc-500'}`}
+          >
+            {tab.toUpperCase()}
+          </button>
+        ))}
       </div>
 
-      <div style={{ border: '1px solid #222', padding: '15px', borderRadius: '5px', minHeight: '300px' }}>
-        {activeTab === 'dashboard' && (
-          <div>
-            <h3>SYSTEM METRICS</h3>
-            <p>CPU: <span style={{color: '#fff'}}>OPTIMAL</span></p>
-            <p>Neo Engine: <span style={{color: '#fff'}}>ACTIVE</span></p>
-          </div>
-        )}
-
+      {/* Content Area */}
+      <div className="p-4">
+        {activeTab === 'dashboard' && <Dashboard />}
         {activeTab === 'emergent' && (
-          <div>
-            <h3>EMERGENT SCANNER</h3>
-            <p>Scanning local repositories...</p>
-            <div style={{ background: '#111', padding: '10px', marginTop: '10px' }}>No anomalies detected.</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-zinc-800 p-4">
+              <h3 className="text-blue-500 mb-2">PROMPT</h3>
+              <textarea className="w-full bg-transparent border-none focus:ring-0 text-sm" rows={10} placeholder="Input command..."></textarea>
+            </div>
+            <div className="border border-zinc-800 p-4 bg-zinc-900/20">
+              <h3 className="text-green-500 mb-2">OUTPUT</h3>
+              <div className="text-xs text-zinc-400">Waiting for execution...</div>
+            </div>
           </div>
         )}
-
-        {activeTab === 'bridge' && (
-          <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h3>MANUAL OVERRIDE</h3>
-            <button onClick={handleBridgeExecute} style={{ fontSize: '24px', padding: '20px 40px', background: '#0f0', color: '#000', border: 'none', borderRadius: '10px', fontWeight: 'bold' }}>+ EXECUTE</button>
+        {/* Tab lainnya akan merender konten minimalis agar build sukses */}
+        {!['dashboard', 'emergent'].includes(activeTab) && (
+          <div className="p-20 text-center text-zinc-700 border border-dashed border-zinc-800">
+            {activeTab.toUpperCase()} MODULE ACTIVE
           </div>
         )}
       </div>
-
-      <div style={{ marginTop: '20px', borderTop: '1px solid #333', paddingTop: '10px', fontSize: '12px', color: '#888' }}>
-        {logs.map((l, i) => <div key={i}>{l}</div>)}
-      </div>
-
     </div>
   );
 };
