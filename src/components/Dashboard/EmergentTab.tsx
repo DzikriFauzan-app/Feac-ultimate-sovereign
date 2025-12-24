@@ -1,3 +1,4 @@
+import SovereignSovereignDashboard from './components/SovereignDashboard/SovereignSovereignDashboard';
 import Canvas from './LogicNode/Canvas';
 
 const EmergentTab = () => {

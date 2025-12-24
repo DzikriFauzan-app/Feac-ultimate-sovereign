@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Terminal, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 
 const EmergentTab = () => {
-  const [proposals, setProposals] = useState([]);
+  const [proposals, setProposals] = useState<any[]>([]);
   const [isScanning, setIsScanning] = useState(false);
 
   const scanRepo = async () => {
@@ -13,7 +13,7 @@ const EmergentTab = () => {
     setIsScanning(false);
   };
 
-  const handleApprove = async (issue) => {
+  const handleApprove = async (issue: any) => {
     // Pindah ke mode auto-fix
     await fetch('http://10.159.189.152:3000/api/emergent/approve', {
       method: 'POST',

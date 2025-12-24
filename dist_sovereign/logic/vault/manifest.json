@@ -1,0 +1,8 @@
+{
+  "system_name": "FEAC_ULTIMATE_SOVEREIGN",
+  "version": "1.0.0-STABLE",
+  "role": "Autonomous Execution & Governance",
+  "kernel_link": "ARIES_PORT_3333",
+  "engine_link": "NEO_PORT_5000",
+  "permissions": "FULL_SOVEREIGNTY"
+}
