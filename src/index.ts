@@ -28,7 +28,7 @@ app.post('/api/validate-key', async (req, res) => {
     }
 });
 
-app.get('/health', (req, res) => res.json({ status: "BRIDGE_ACTIVE" }));
+app.get('/health', (req, res) => res.json({ status: "BRIDGE_ACTIVE", message: "Aries Bridge is online in the cloud!" }));
 
 
 // --- ARIES AUTH SYSTEM ---
