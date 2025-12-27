@@ -9,7 +9,7 @@ const Dashboard = () => {
 
   const handleSovereignEntry = async () => {
     try {
-      const response = await fetch('https://leakless-ongoing-daren.ngrok-free.dev/api/validate-key', {
+      const response = await fetch('https://redesigned-yodel-7v6wjx4r9x653ww6g-3001.app.github.dev/api/validate-key', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ apiKey: key })
