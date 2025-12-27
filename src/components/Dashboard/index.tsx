@@ -9,10 +9,10 @@ const Dashboard = () => {
 
   const handleSovereignEntry = async () => {
     try {
-      const response = await fetch('http://10.4.35.107:3000/api/validate-key', {
+      const response = await fetch('https://leakless-ongoing-daren.ngrok-free.dev/api/validate-key', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key })
+        body: JSON.stringify({ apiKey: key })
       });
 
       const result = await response.json();
