@@ -10,7 +10,7 @@ export class AriesKernelConnector {
         user_id: "sovereign_operator",
         input: input
       }, {
-        headers: { "x-aries-key": "aries-sovereign-ultimate" }
+        headers: { "ngrok-skip-browser-warning": "true", "x-aries-key": "aries-sovereign-ultimate" }
       });
       return response.data;
     } catch (error) {
