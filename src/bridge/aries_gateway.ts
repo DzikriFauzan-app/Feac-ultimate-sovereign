@@ -10,7 +10,7 @@ export class AriesGateway {
                 payload: { prompt, context },
                 timestamp: Date.now()
             }, {
-                headers: { "ngrok-skip-browser-warning": "true", "x-aries-key": "aries-sovereign-ultimate" }
+                headers: { "ngrok-skip-browser-warning": "true", "ngrok-skip-browser-warning": "true", "Content-Type": "application/json", "ngrok-skip-browser-warning": "true", "x-aries-key": "aries-sovereign-ultimate" }
             });
             return response.data;
         } catch (error) {
