@@ -1,38 +1,40 @@
 name: FEAC Sovereign Ultimate Build
+
 on:
   push:
     branches: [ main ]
-permissions:
-  contents: write
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node v22
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '22'
-      - name: Setup Java 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '21'
-      - name: Build Assets
-        run: |
-          cd frontend
-          npm install
-          # Lewati tsc, langsung build dengan vite agar tidak error TS
-          npx vite build
-      - name: Android Sync & Compile
-        run: |
-          cd frontend
-          ./node_modules/.bin/cap sync android
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
-      - name: Upload APK
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Sovereign Audit
+        run: npx tsc --noEmit
+        # Jika audit gagal, workflow akan berhenti otomatis (Safety First)
+
+      - name: Build Bridge & Core
+        run: npm run build
+        env:
+          # INJEKSI SECRETS (Ini yang tadi hilang)
+          ARIES_API_KEY: ${{ secrets.ARIES_API_KEY }}
+          ARIES_ENDPOINT: ${{ secrets.ARIES_ENDPOINT }}
+
+      - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: FEAC-Sovereign-Rebuild
-          path: frontend/android/app/build/outputs/apk/debug/app-debug.apk
+          name: feac-sovereign-dist
+          path: dist/
+          # Ini biar kita bisa periksa "Penyakit" kalau gagal lagi
