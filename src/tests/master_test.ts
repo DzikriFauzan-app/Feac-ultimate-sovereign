@@ -1,4 +1,4 @@
-import { SovereignNegotiator } from '../core/negotiator';
+import { Negotiator } from '../core/negotiator';
 import { SelfAnalyzer } from '../core/analyzer';
 
 async function runMasterTest() {
@@ -11,7 +11,7 @@ async function runMasterTest() {
         console.log("✅ [PASS] Structural Density Check");
     }
 
-    const negotiation = await SovereignNegotiator.requestSystemUpgrade();
+    const negotiation = await Negotiator.requestSystemUpgrade();
     if (negotiation) {
         console.log("✅ [PASS] AI Negotiation Pipeline");
     }

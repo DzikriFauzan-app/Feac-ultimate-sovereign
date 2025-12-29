@@ -1,4 +1,5 @@
 {
+"type": "module",
   "name": "feac-ultimate-sovereign",
   "version": "1.0.0",
   "description": "Ultimate Sovereign System for FEAC Ecosystem",
