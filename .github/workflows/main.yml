@@ -3,56 +3,43 @@ name: Build Sovereign APK
 on:
   push:
     branches: [ main, master ]
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+      - uses: actions/checkout@v4
 
       - name: Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            build-essential \
-            git \
-            python3-dev \
-            ffmpeg \
-            libsdl2-dev \
-            libsdl2-image-dev \
-            libsdl2-mixer-dev \
-            libsdl2-ttf-dev \
-            libportmidi-dev \
-            libswscale-dev \
-            libavformat-dev \
-            libavcodec-dev \
-            zlib1g-dev \
-            libgstreamer1.0-dev \
-            gstreamer1.0-plugins-base \
-            gstreamer1.0-plugins-good \
-            libffi-dev \
-            libssl-dev \
-            libjpeg-turbo8-dev
+            build-essential git python3-dev ffmpeg libsdl2-dev libsdl2-image-dev \
+            libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev \
+            libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
+            gstreamer1.0-plugins-base gstreamer1.0-plugins-good libffi-dev \
+            libssl-dev libjpeg-turbo8-dev
 
-      - name: Install Buildozer
-        run: |
-          pip install --user --upgrade buildozer cython virtualenv
-
-      - name: Build with Buildozer
-        run: |
-          # Hanya memproses folder yang benar-benar berisi 44 agen elit
-          export PATH=$PATH:$HOME/.local/bin
-          buildozer android debug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          name: Sovereign-Elite-44
+          python-version: '3.11'
+
+      - name: Install Buildozer & Cython
+        run: |
+          pip install --upgrade pip
+          pip install buildozer cython==0.29.33 virtualenv
+
+      - name: Build APK with Buildozer
+        run: |
+          # Perintah ini akan memakan waktu sekitar 10-15 menit
+          buildozer android debug
+          # Pastikan file APK benar-benar ada di folder bin/
+          ls -R bin/
+
+      - name: Upload Finished APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FEAC-Sovereign-Official-APK
           path: bin/*.apk
