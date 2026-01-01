@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>NeoEngine Console</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>NeoEngine Standalone</h1>
+    <div id="status" class="status-offline">OFFLINE</div>
+  </header>
+  <main>
+    <section class="panel">
+      <h2>Command Center</h2>
+      <select id="agentSelect">
+        <option value="ShellAgent">ShellAgent</option>
+        <option value="RepoAgent">RepoAgent</option>
+        <option value="CodeAgent">CodeAgent</option>
+        <option value="AISupervisor">AISupervisor</option>
+        <option value="BuildAgent">BuildAgent</option>
+        <option value="SecurityAgent">SecurityAgent</option>
+      </select>
+      <input id="cmdInput" placeholder="command (e.g., run_command)" />
+      <input id="paramInput" placeholder='params JSON ({"cmd":"ls -la"})' />
+      <button id="sendBtn">Execute</button>
+    </section>
+
+    <section class="panel">
+      <h2>Logs</h2>
+      <div id="terminal" class="terminal"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

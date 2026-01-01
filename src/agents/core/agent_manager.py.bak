@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""
+AgentManager: load agents from agents/ package and instantiate with (bus, db).
+This file intentionally uses explicit imports to avoid dynamic import pitfalls on Termux.
+"""
+import os
+import importlib
+import pkgutil
+
+# Note: ensure Python path includes project root so 'agents' package resolves
+from core.message_bus import MessageBus
+from core.database import Database  # keep for type reference if present
+
+class AgentManager:
+    def __init__(self, bus, db):
+        self.bus = bus
+        self.db = db
+        self.agents = {}
+        # explicit static agent list (safer on Termux)
+        self._agent_classes = [
+            "ShellAgent",
+            "RepoAgent",
+            "CodeAgent",
+            "BuildAgent",
+            "SecurityAgent",
+            "AssetGeneratorAgent",
+            "MapGeneratorAgent",
+            "AISupervisor"
+        ]
+
+    def load_agents(self):
+        # try to import agent modules from agents package
+        base_pkg = "agents"
+        for name in self._agent_classes:
+            mod_name = f"{base_pkg}.{name}"
+            try:
+                module = importlib.import_module(mod_name)
+                AgentClass = getattr(module, name)
+                # instantiate with (bus, db) — ensure correct ordering
+                agent = AgentClass(self.bus, self.db)
+                self.agents[name] = agent
+                print(f"[AgentManager] Loaded agent: {name}")
+            except ModuleNotFoundError:
+                # ignore absent optional agents
+                # print to stdout for debugging
+                print(f"[AgentManager] Agent module not found: {mod_name} (skipping)")
+            except Exception as e:
+                print(f"[AgentManager] Failed loading {name}: {e}")
+
+    async def handle_task(self, task: dict):
+        """Dispatch task dict to appropriate agent.process_task(task)."""
+        agent_name = task.get("agent")
+        if not agent_name:
+            raise ValueError("task missing 'agent' field")
+        agent = self.agents.get(agent_name)
+        if not agent:
+            raise ValueError(f"agent not found: {agent_name}")
+        # ensure task has id
+        if "id" not in task:
+            import uuid
+            task = dict(task)
+            task["id"] = f"task-{uuid.uuid4()}"
+        # call agent process_task (may be async)
+        proc = agent.process_task(task)
+        if hasattr(proc, "__await__"):
+            # it's a coroutine - schedule it
+            return await proc
+        return proc

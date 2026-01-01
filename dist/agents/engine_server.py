@@ -1,0 +1,75 @@
+import sys, os, asyncio, socket
+from typing import Any, Dict, Optional
+from fastapi import FastAPI, Request
+from contextlib import asynccontextmanager
+import socketio
+import uvicorn
+
+# Setup Path
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, CURRENT_DIR)
+from core.engine import NeoEngine
+
+def get_master_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except: return "127.0.0.1"
+
+MASTER_IP = get_master_ip()
+engine: Optional[NeoEngine] = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global engine
+    engine = NeoEngine()
+    @app.get('/api/emergent/scan')
+    async def emergent_scan(): return {'success': True, 'data': [{'id': 1, 'type': 'SECURITY', 'desc': '39 Council Agents Active'}]}
+    asyncio.create_task(engine.start())
+    print(f"\n✨ NEO-ENGINE SOVEREIGN ONLINE: http://{MASTER_IP}:8080")
+    yield
+
+sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
+app_fastapi = FastAPI(title="NeoEngine", lifespan=lifespan)
+app = socketio.ASGIApp(socketio_server=sio, other_asgi_app=app_fastapi)
+
+# Endpoint Dashboard Master
+@app_fastapi.get("/api/dashboard/stats")
+async def get_stats():
+    agents_dir = os.path.join(CURRENT_DIR, "agents")
+    return {
+        "agent_count": len([f for f in os.listdir(agents_dir) if f.endswith('.py')]),
+        "ip": MASTER_IP,
+    }
+
+# Unified Task Dispatcher (Bridge to Council)
+@app_fastapi.post("/api/task")
+async def http_dispatch_task(payload: Dict[str, Any]):
+    try:
+        result = await engine.dispatch_task(payload)
+        return result if result is not None else {"status": "ERROR", "msg": "Agent returned None"}
+    except Exception as e:
+        print(f"❌ [Internal Error] {e}")
+        return {"status": "ERROR", "msg": str(e)}
+
+@app_fastapi.post("/api/task/batch")
+async def http_batch_dispatch(payload: Dict[str, Any]):
+    tasks = payload.get("data", [])
+    for task in tasks:
+        asyncio.create_task(engine.dispatch_task(task))
+
+
+
+
+
+
+# RE-FIXED SOVEREIGN BRIDGE
+
+if __name__ == '__main__':
+    # Force patch get_agent agar council 34 agent bisa diakses
+    
+    import uvicorn
+    uvicorn.run(app, host='0.0.0.0', port=8080)

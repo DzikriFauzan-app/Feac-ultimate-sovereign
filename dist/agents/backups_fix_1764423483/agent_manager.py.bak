@@ -1,0 +1,26 @@
+class AgentManager:
+    def __init__(self, bus, db):
+        self.bus = bus
+        self.db = db
+        self.agents = {}
+
+        from agents.ShellAgent import ShellAgent
+        from agents.RepoAgent import RepoAgent
+        from agents.CodeAgent import CodeAgent
+        from agents.BuildAgent import BuildAgent
+        from agents.SecurityAgent import SecurityAgent
+        from agents.AssetGeneratorAgent import AssetGeneratorAgent
+        from agents.MapGeneratorAgent import MapGeneratorAgent
+
+        for A in [ShellAgent, RepoAgent, CodeAgent, BuildAgent, SecurityAgent, AssetGeneratorAgent, MapGeneratorAgent]:
+            agent = A(self.bus, self.db)
+            self.agents[agent.name] = agent
+            print("[AgentManager] Loaded agent:", agent.name)
+
+    async def handle_task(self, task):
+        agent_name = task.get("agent")
+        if agent_name not in self.agents:
+            print("[AgentManager] Unknown agent:", agent_name)
+            return
+
+        await self.agents[agent_name].process_task(task)

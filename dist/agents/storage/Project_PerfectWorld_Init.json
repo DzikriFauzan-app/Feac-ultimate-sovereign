@@ -1,0 +1,26 @@
+{
+  "project_name": "PerfectWorld_Mobile",
+  "targets": ["Unity", "Android"],
+  "tasks": [
+    {
+      "agent": "CodeAgent",
+      "command": "generate_core",
+      "params": {"engine": "unity", "task": "PlayerController"}
+    },
+    {
+      "agent": "EconomyAgent",
+      "command": "balance",
+      "params": {"starting_gold": 1000, "item_inflation": 1.2}
+    },
+    {
+      "agent": "RenderAgent",
+      "command": "gen_shader",
+      "params": {"type": "PBR_Water"}
+    },
+    {
+      "agent": "LogicNodeAgent",
+      "command": "compile_flow",
+      "params": {"flow_id": "Quest_System_Alpha"}
+    }
+  ]
+}

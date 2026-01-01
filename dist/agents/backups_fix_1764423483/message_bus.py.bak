@@ -1,0 +1,23 @@
+import asyncio
+from collections import defaultdict
+
+class MessageBus:
+    def __init__(self):
+        self.subscribers = defaultdict(list)
+        self.queue = asyncio.Queue()
+
+    async def publish(self, topic, message):
+        await self.queue.put((topic, message))
+
+    async def subscribe(self, topic, callback):
+        self.subscribers[topic].append(callback)
+
+    async def start(self):
+        while True:
+            topic, message = await self.queue.get()
+            if topic in self.subscribers:
+                for callback in self.subscribers[topic]:
+                    if asyncio.iscoroutinefunction(callback):
+                        await callback(message)
+                    else:
+                        callback(message)

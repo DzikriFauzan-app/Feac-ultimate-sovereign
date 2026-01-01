@@ -1,0 +1,18 @@
+class BaseAgent:
+    def __init__(self, name, bus):
+        self.name = name
+        self.bus = bus
+
+    async def report_success(self, task_id, result):
+        await self.bus.publish("task_success", {
+            "id": task_id,
+            "agent": self.name,
+            "result": result
+        })
+
+    async def report_error(self, task_id, error):
+        await self.bus.publish("task_failed", {
+            "id": task_id,
+            "agent": self.name,
+            "error": str(error)
+        })

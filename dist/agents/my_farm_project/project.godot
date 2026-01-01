@@ -1,0 +1,7 @@
+; minimal project.godot
+config_version=4
+
+[application]
+config/name="MyFarmProject"
+config/description="Auto-created placeholder project for NeoEngine build tests"
+run/main_scene=""
