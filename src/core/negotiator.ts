@@ -1,4 +1,4 @@
-import { AriesGateway } from '../bridge/aries_gateway.ts';
+import { AriesGateway } from "../bridge/aries_gateway";
 
 export class Negotiator {
     // Method untuk audit sistem (digunakan emulator)

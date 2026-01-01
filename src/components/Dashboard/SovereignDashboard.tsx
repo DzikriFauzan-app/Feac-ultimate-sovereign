@@ -54,7 +54,7 @@ const SovereignDashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-[#0f0f0f] p-6 rounded-2xl border border-white/5 shadow-xl">
                 <p className="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Revenue</p>
-                <p className="text-3xl font-black text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.5)] mt-2">$1<span className="text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.6)]">.2M</span></p>
+                <p className="text-3xl font-black text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.5)] mt-2">$1<span className="text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.6)]"><span className="text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.6)]">.2M</span></span></p>
               </div>
               <div className="bg-[#0f0f0f] p-6 rounded-2xl border border-white/5 shadow-xl">
                 <p className="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Active Nodes</p>
