@@ -19,7 +19,7 @@ jobs:
             libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev \
             libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
             gstreamer1.0-plugins-base gstreamer1.0-plugins-good libffi-dev \
-            libssl-dev libjpeg-turbo8-dev
+            libssl-dev libjpeg-turbo8-dev openjdk-17-jdk
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -33,9 +33,11 @@ jobs:
 
       - name: Build APK with Buildozer
         run: |
-          # Perintah ini akan memakan waktu sekitar 10-15 menit
-          buildozer android debug
-          # Pastikan file APK benar-benar ada di folder bin/
+          # Perintah krusial: Menerima semua lisensi Android SDK secara otomatis
+          mkdir -p ~/.android && touch ~/.android/repositories.cfg
+          yes | buildozer android debug
+          
+          # Cek hasil build
           ls -R bin/
 
       - name: Upload Finished APK
