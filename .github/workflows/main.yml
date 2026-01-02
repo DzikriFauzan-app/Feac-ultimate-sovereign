@@ -20,7 +20,7 @@ jobs:
             libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
             gstreamer1.0-plugins-base gstreamer1.0-plugins-good libffi-dev \
             libssl-dev libjpeg-turbo8-dev openjdk-17-jdk \
-            autoconf automake libtool pkg-config  # Tambahan krusial untuk Autoconf error
+            autoconf automake libtool pkg-config
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -30,16 +30,16 @@ jobs:
       - name: Install Buildozer & Cython
         run: |
           pip install --upgrade pip
-          pip install buildozer "cython<3.0" virtualenv
+          pip install "buildozer==1.5.0" "cython<3.0" virtualenv
 
       - name: Build APK with Buildozer
         run: |
-          # Perbaikan cara menerima lisensi tanpa Broken Pipe
-          mkdir -p ~/.android && touch ~/.android/repositories.cfg
-          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
+          # Reset buildozer agar tidak ada cache sisa
+          rm -rf .buildozer
           
-          # Jalankan buildozer dengan log level 2 agar kita bisa melihat detail jika gagal lagi
-          buildozer -v android debug
+          # Terima lisensi dan paksa download NDK yang benar (25b)
+          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
+          yes | buildozer -v android debug
         env:
           yes: y
 
