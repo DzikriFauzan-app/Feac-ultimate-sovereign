@@ -6,7 +6,6 @@ on:
 
 jobs:
   build:
-    # Menggunakan Ubuntu 22.04 untuk stabilitas toolchain NDK & Autotools
     runs-on: ubuntu-22.04
 
     steps:
@@ -15,13 +14,15 @@ jobs:
       - name: Install System Dependencies
         run: |
           sudo apt-get update
+          # Instal libunwind-dev dulu untuk mencegah error GStreamer
+          sudo apt-get install -y libunwind-dev
           sudo apt-get install -y \
             build-essential git python3-dev ffmpeg libsdl2-dev libsdl2-image-dev \
             libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev \
             libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
             gstreamer1.0-plugins-base gstreamer1.0-plugins-good libffi-dev \
             libssl-dev libjpeg-turbo8-dev openjdk-17-jdk \
-            autoconf automake libtool pkg-config m4 libltdl-dev
+            autoconf automake libtool pkg-config m4 libltdl-dev libsqlite3-dev
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -35,14 +36,9 @@ jobs:
 
       - name: Build APK with Buildozer
         run: |
-          # Setup environment agar Autotools menemukan macro libtool
           export ACLOCAL_PATH=/usr/share/aclocal
           mkdir -p ~/.android && touch ~/.android/repositories.cfg
-          
-          # Bersihkan cache korup dari percobaan sebelumnya
           rm -rf .buildozer
-          
-          # Eksekusi Build dengan persetujuan lisensi otomatis
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
           buildozer -v android debug
         env:
