@@ -6,7 +6,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Menggunakan Ubuntu 22.04 untuk stabilitas toolchain NDK & Autotools
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +21,7 @@ jobs:
             libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
             gstreamer1.0-plugins-base gstreamer1.0-plugins-good libffi-dev \
             libssl-dev libjpeg-turbo8-dev openjdk-17-jdk \
-            autoconf automake libtool pkg-config m4
+            autoconf automake libtool pkg-config m4 libltdl-dev
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,13 +35,21 @@ jobs:
 
       - name: Build APK with Buildozer
         run: |
-          # Perbaikan krusial untuk error LT_SYS_SYMBOL_USCORE
-          # Kita pastikan makro libtool tersedia untuk autoreconf
-          sudo cp /usr/share/aclocal/libtool.m4 /usr/share/aclocal/ltoptions.m4 /usr/share/aclocal/ltsugar.m4 /usr/share/aclocal/ltversion.m4 /usr/share/aclocal/lt~obsolete.m4 . || true
+          # Setup environment agar Autotools menemukan macro libtool
+          export ACLOCAL_PATH=/usr/share/aclocal
+          mkdir -p ~/.android && touch ~/.android/repositories.cfg
           
-          # Bersihkan cache lama yang korup
+          # Bersihkan cache korup dari percobaan sebelumnya
           rm -rf .buildozer
           
-          # Jalankan build dengan NDK stabil (didownload otomatis oleh buildozer)
+          # Eksekusi Build dengan persetujuan lisensi otomatis
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
           buildozer -v android debug
+        env:
+          yes: y
+
+      - name: Upload Finished APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FEAC-Sovereign-Official-APK
+          path: bin/*.apk
