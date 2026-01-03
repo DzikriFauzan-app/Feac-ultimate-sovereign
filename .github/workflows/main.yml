@@ -24,17 +24,16 @@ jobs:
 
       - name: Build Official Sovereign APK
         run: |
+          # Upgrade pip dan install tools
           pip install --upgrade pip
           pip install "buildozer==1.5.0" "cython<3.0" virtualenv
           
-          # Hapus sisa sampah yang bikin Force Close
-          rm -rf .buildozer
-          
-          # Paksa Android SDK menerima lisensi
+          # Setup environment
+          export ACLOCAL_PATH=/usr/share/aclocal
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
           
-          # Proses pembersihan dan build mendalam
-          buildozer android clean
+          # Langsung jalankan debug. Buildozer akan otomatis mendownload 
+          # semua yang diperlukan jika folder .buildozer kosong.
           buildozer -v android debug
         env:
           yes: y
