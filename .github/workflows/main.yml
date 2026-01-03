@@ -20,7 +20,7 @@ jobs:
             libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
             gstreamer1.0-plugins-base gstreamer1.0-plugins-good libffi-dev \
             libssl-dev libjpeg-turbo8-dev openjdk-17-jdk \
-            autoconf automake libtool pkg-config
+            autoconf automake libtool pkg-config m4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,17 +34,13 @@ jobs:
 
       - name: Build APK with Buildozer
         run: |
-          # Reset buildozer agar tidak ada cache sisa
+          # Perbaikan krusial untuk error LT_SYS_SYMBOL_USCORE
+          # Kita pastikan makro libtool tersedia untuk autoreconf
+          sudo cp /usr/share/aclocal/libtool.m4 /usr/share/aclocal/ltoptions.m4 /usr/share/aclocal/ltsugar.m4 /usr/share/aclocal/ltversion.m4 /usr/share/aclocal/lt~obsolete.m4 . || true
+          
+          # Bersihkan cache lama yang korup
           rm -rf .buildozer
           
-          # Terima lisensi dan paksa download NDK yang benar (25b)
+          # Jalankan build dengan NDK stabil (didownload otomatis oleh buildozer)
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
-          yes | buildozer -v android debug
-        env:
-          yes: y
-
-      - name: Upload Finished APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: FEAC-Sovereign-Official-APK
-          path: bin/*.apk
+          buildozer -v android debug
