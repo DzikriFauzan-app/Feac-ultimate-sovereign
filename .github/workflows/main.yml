@@ -1,62 +1,46 @@
 name: Build Sovereign APK
-
-on:
-  push:
-    branches: [ main, master ]
+on: [push]
 
 jobs:
   build:
-    # Menggunakan Ubuntu 22.04 karena 24.04 sering error pada Autotools
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Java 17
-        # Wajib Java 17 untuk Android SDK API 33+
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install System Dependencies
+      - name: Install Essential Libraries
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            build-essential git python3-dev ffmpeg libsdl2-dev libsdl2-image-dev \
-            libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev \
-            libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
-            gstreamer1.0-plugins-base gstreamer1.0-plugins-good libffi-dev \
-            libssl-dev libjpeg-turbo8-dev autoconf automake libtool pkg-config \
-            m4 libltdl-dev libunwind-dev libsqlite3-dev
+          sudo apt-get install -y build-essential git python3-dev ffmpeg \
+            libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
+            libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev \
+            zlib1g-dev libgstreamer1.0-dev libffi-dev libssl-dev autoconf \
+            automake libtool pkg-config libunwind-dev libsqlite3-dev
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Buildozer & Cython
+      - name: Build Official Sovereign APK
         run: |
           pip install --upgrade pip
-          # Mengunci Cython di bawah 3.0 agar kompatibel dengan Kivy
           pip install "buildozer==1.5.0" "cython<3.0" virtualenv
-
-      - name: Build APK with Buildozer
-        run: |
-          # Memastikan makro libtool terbaca oleh sistem build
-          export ACLOCAL_PATH=/usr/share/aclocal
           
-          # Membersihkan sisa build yang hang sebelumnya
+          # Hapus sisa sampah yang bikin Force Close
           rm -rf .buildozer
           
-          # Menyetujui lisensi SDK dan menjalankan kompilasi
+          # Paksa Android SDK menerima lisensi
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
+          
+          # Proses pembersihan dan build mendalam
+          buildozer android clean
           buildozer -v android debug
         env:
           yes: y
 
-      - name: Upload Finished APK
+      - name: Deliver APK
         uses: actions/upload-artifact@v4
         with:
-          name: FEAC-Sovereign-Official-APK
+          name: FEAC-ULTIMATE-SOVEREIGN
           path: bin/*.apk
