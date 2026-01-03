@@ -6,6 +6,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: false
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -13,7 +15,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Essential Libraries
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential git python3-dev ffmpeg \
@@ -22,24 +24,21 @@ jobs:
             zlib1g-dev libgstreamer1.0-dev libffi-dev libssl-dev autoconf \
             automake libtool pkg-config libunwind-dev libsqlite3-dev
 
-      - name: Build Official Sovereign APK
+      - name: Build Clean APK
         run: |
-          # Upgrade pip dan install tools
           pip install --upgrade pip
           pip install "buildozer==1.5.0" "cython<3.0" virtualenv
           
-          # Setup environment
-          export ACLOCAL_PATH=/usr/share/aclocal
-          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
+          # Hapus cache total untuk memastikan Aries & Neo Engine bersih
+          rm -rf .buildozer
           
-          # Langsung jalankan debug. Buildozer akan otomatis mendownload 
-          # semua yang diperlukan jika folder .buildozer kosong.
+          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
           buildozer -v android debug
         env:
           yes: y
 
-      - name: Deliver APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: FEAC-ULTIMATE-SOVEREIGN
+          name: FEAC-ULTIMATE-SOVEREIGN-OFFICIAL
           path: bin/*.apk
