@@ -22,19 +22,21 @@ jobs:
             zlib1g-dev libffi-dev libssl-dev autoconf automake libtool \
             pkg-config libunwind-dev libsqlite3-dev
 
-      - name: Build with Multidex Support
+      - name: Build With Multidex Fix
         run: |
           pip install "buildozer==1.5.0" "cython<3.0" virtualenv
           
-          # Hapus dist lama agar Gradle membuat ulang Manifest dengan Multidex
+          # Hapus sisa build lama yang 'patah'
           rm -rf .buildozer/android/platform/build-armeabi-v7a_arm64-v8a/dists/feac_sovereign
           
-          # Paksa AndroidX agar MultidexApplication terbaca
-          mkdir -p ~/.android && touch ~/.android/repositories.cfg
+          # Paksa Gradle untuk mendukung AndroidX dan Multidex
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
           
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
+          # Bersihkan cache internal buildozer
+          buildozer android clean
+          # Jalankan build final
           buildozer -v android debug
         env:
           yes: y
