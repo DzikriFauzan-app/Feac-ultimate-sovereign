@@ -13,7 +13,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Dependencies
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential git python3-dev ffmpeg \
@@ -24,21 +24,22 @@ jobs:
 
       - name: Build with Multidex Support
         run: |
-          pip install "buildozer==1.5.0" "cython<3.0"
+          pip install "buildozer==1.5.0" "cython<3.0" virtualenv
           
-          # Membersihkan sisa DEX yang korup
+          # Hapus dist lama agar Gradle membuat ulang Manifest dengan Multidex
           rm -rf .buildozer/android/platform/build-armeabi-v7a_arm64-v8a/dists/feac_sovereign
           
-          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
-          # Tambahkan flag untuk mengaktifkan AndroidX secara global
-          echo "android.useAndroidX=true" >> gradle.properties
+          # Paksa AndroidX agar MultidexApplication terbaca
+          mkdir -p ~/.android && touch ~/.android/repositories.cfg
+          echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
           
+          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
           buildozer -v android debug
         env:
           yes: y
 
-      - name: Deliver Fixed APK
+      - name: Deliver APK
         uses: actions/upload-artifact@v4
         with:
           name: FEAC-SOVEREIGN-MULTIDEX-FIXED
