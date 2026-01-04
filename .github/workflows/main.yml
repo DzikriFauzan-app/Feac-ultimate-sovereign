@@ -6,8 +6,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: false
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -15,30 +13,33 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install System Dependencies
+      - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential git python3-dev ffmpeg \
             libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
             libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev \
-            zlib1g-dev libgstreamer1.0-dev libffi-dev libssl-dev autoconf \
-            automake libtool pkg-config libunwind-dev libsqlite3-dev
+            zlib1g-dev libffi-dev libssl-dev autoconf automake libtool \
+            pkg-config libunwind-dev libsqlite3-dev
 
-      - name: Build Clean APK
+      - name: Build with Multidex Support
         run: |
-          pip install --upgrade pip
-          pip install "buildozer==1.5.0" "cython<3.0" virtualenv
+          pip install "buildozer==1.5.0" "cython<3.0"
           
-          # Hapus cache total untuk memastikan Aries & Neo Engine bersih
-          rm -rf .buildozer
+          # Membersihkan sisa DEX yang korup
+          rm -rf .buildozer/android/platform/build-armeabi-v7a_arm64-v8a/dists/feac_sovereign
           
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
+          # Tambahkan flag untuk mengaktifkan AndroidX secara global
+          echo "android.useAndroidX=true" >> gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
+          
           buildozer -v android debug
         env:
           yes: y
 
-      - name: Upload APK
+      - name: Deliver Fixed APK
         uses: actions/upload-artifact@v4
         with:
-          name: FEAC-ULTIMATE-SOVEREIGN-OFFICIAL
+          name: FEAC-SOVEREIGN-MULTIDEX-FIXED
           path: bin/*.apk
