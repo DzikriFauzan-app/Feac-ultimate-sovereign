@@ -1,17 +1,25 @@
-import cgitb; cgitb.enable(format='text') # Logger darurat
+import os
+import sys
+
+# Redirect error ke file agar kita bisa baca lewat file manager HP
+sys.stderr = open("feac_error_log.txt", "w")
+sys.stdout = sys.stderr
+
 try:
-    # --- MASUKKAN IMPORT DAN LOGIKA UTAMA KAMU DI SINI ---
     from kivy.app import App
     from kivy.uix.label import Label
-    # Contoh sederhana untuk tes:
-    class FEACSovereign(App):
-        def build(self):
-            return Label(text='Sovereign Online - Aries Connected')
+    from kivy.uix.scrollview import ScrollView
     
-    if __name__ == '__main__':
-        FEACSovereign().run()
+    class DiagnosticApp(App):
+        def build(self):
+            # Jika berhasil running, tampilkan pesan ini
+            return Label(text="FEAC SOVEREIGN ONLINE\nAries & Neo Engine Ready")
+
+    if __name__ == "__main__":
+        DiagnosticApp().run()
+
 except Exception as e:
-    # Jika crash, cetak error ke file agar bisa kita baca
-    with open("crash_log.txt", "w") as f:
+    # Jika crash, ini akan tertulis di file feac_error_log.txt di folder data aplikasi
+    print(f"CRITICAL ERROR: {e}")
+    with open("/sdcard/FEAC_CRASH.txt", "w") as f:
         f.write(str(e))
-    raise e
