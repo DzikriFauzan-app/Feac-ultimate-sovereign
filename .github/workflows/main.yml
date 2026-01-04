@@ -7,12 +7,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Java 11
-        # Menggunakan Java 11 untuk API 31 agar lebih sinkron
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
 
       - name: Install Dependencies
         run: |
@@ -23,20 +22,17 @@ jobs:
             zlib1g-dev libffi-dev libssl-dev autoconf automake libtool \
             pkg-config libunwind-dev libsqlite3-dev
 
-      - name: Build Nuclear APK
+      - name: Hard Build with Multidex Priority
         run: |
           pip install "buildozer==1.5.0" "cython<3.0" virtualenv
-          
-          # Hapus sisa-sisa build yang gagal total
           rm -rf .buildozer
           
-          # Paksa konfigurasi Multidex di level Gradle properties
+          # Konfigurasi Gradle untuk memaksa Multidex
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
-          echo "android.enableMultiDex=true" >> gradle.properties
           
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
-          # Jalankan build tanpa perintah clean yang merusak
+          # Langsung jalankan debug agar p4a terinstal bersih
           buildozer -v android debug
         env:
           yes: y
@@ -44,5 +40,5 @@ jobs:
       - name: Deliver APK
         uses: actions/upload-artifact@v4
         with:
-          name: FEAC-SOVEREIGN-NUCLEAR-FIX
+          name: FEAC-SOVEREIGN-FINAL
           path: bin/*.apk
