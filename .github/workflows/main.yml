@@ -3,7 +3,7 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -18,33 +18,36 @@ jobs:
           cd frontend
           npm install --force
           npm run build
-          # Pastikan folder dist tersedia untuk di-bundle Python
-          cp -r dist ../dist_sovereign || true
+          mkdir -p ../dist_sovereign
+          cp -r dist/* ../dist_sovereign/ || true
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install Buildozer & Dependencies
+      - name: Install Buildozer & System Deps
         run: |
-          pip install --upgrade pip
-          pip install buildozer==1.5.0 "cython<3.0" virtualenv
-          # MENGGANTI libreadline-gplv2-dev dengan libreadline-dev (Solusi Error 100)
           sudo apt-get update
+          # Menghapus package bermasalah dan menginstal yang stabil
           sudo apt-get install -y \
             build-essential git python3-dev ffmpeg libsdl2-dev libsdl2-image-dev \
             libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev \
             libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
             gstreamer1.0-plugins-base gstreamer1.0-plugins-good libsqlite3-dev \
-            libreadline-dev libffi-dev libssl-dev libbz2-dev libncurses-dev
+            libreadline-dev libffi-dev libssl-dev libbz2-dev libncurses-dev autoconf automake libtool
+          
+          pip install --upgrade pip
+          pip install "buildozer==1.5.0" "Cython<3.0" "virtualenv==20.21.1"
 
       - name: Build Android APK
         run: |
-          # Injeksi izin Android secara otomatis sebelum build
+          # Auto-fix permissions & paths di buildozer.spec
           sed -i 's/android.permissions =.*/android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE,WAKE_LOCK,ACCESS_NETWORK_STATE/' buildozer.spec
-          # Jalankan build
-          buildozer -v android debug
+          sed -i 's/android.api =.*/android.api = 31/' buildozer.spec
+          
+          # Jalankan build dengan auto-accept SDK
+          yes | buildozer -v android debug
         env:
           ACCEPT_SDK_LICENSE: "yes"
 
