@@ -4,7 +4,7 @@ export class Negotiator {
     // Method untuk audit sistem (digunakan emulator)
     async startNegotiation(input: string) {
         console.log("🛰️ [NEGOTIATOR] Memulai negosiasi...");
-        return await AriesGateway.requestCognition(input, { source: 'emulator' });
+        return await AriesGateway.requestCognition(input);
     }
 
     // Method untuk upgrade (diminta oleh master_test.ts)
