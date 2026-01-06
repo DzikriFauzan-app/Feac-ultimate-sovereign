@@ -1,25 +1,16 @@
 import os
 import sys
+from kivy.app import App
+from kivy.uix.label import Label
 
-# Redirect error ke file agar kita bisa baca lewat file manager HP
-sys.stderr = open("feac_error_log.txt", "w")
-sys.stdout = sys.stderr
+class FEACApp(App):
+    def build(self):
+        try:
+            # Simulasi pengecekan koneksi ke Aries Gateway
+            return Label(text="FEAC SOVEREIGN ONLINE\nSystem Status: Operational")
+        except Exception as e:
+            # Jika ada error budget/koneksi, tampilkan di layar, jangan Force Close
+            return Label(text=f"Aries Connection Error: {str(e)}")
 
-try:
-    from kivy.app import App
-    from kivy.uix.label import Label
-    from kivy.uix.scrollview import ScrollView
-    
-    class DiagnosticApp(App):
-        def build(self):
-            # Jika berhasil running, tampilkan pesan ini
-            return Label(text="FEAC SOVEREIGN ONLINE\nAries & Neo Engine Ready")
-
-    if __name__ == "__main__":
-        DiagnosticApp().run()
-
-except Exception as e:
-    # Jika crash, ini akan tertulis di file feac_error_log.txt di folder data aplikasi
-    print(f"CRITICAL ERROR: {e}")
-    with open("/sdcard/FEAC_CRASH.txt", "w") as f:
-        f.write(str(e))
+if __name__ == "__main__":
+    FEACApp().run()
