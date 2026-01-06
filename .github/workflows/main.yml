@@ -1,44 +1,28 @@
-name: Build Sovereign APK
+name: Sovereign Build APK
 on: [push]
-
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Java 17
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Frontend Deps
+        run: |
+          cd frontend
+          npm install --force
+          npm run build
+      - name: Setup Java 11
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
-
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential git python3-dev ffmpeg \
-            libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
-            libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev \
-            zlib1g-dev libffi-dev libssl-dev autoconf automake libtool \
-            pkg-config libunwind-dev libsqlite3-dev
-
-      - name: Hard Build with Multidex Priority
+          java-version: '11'
+      - name: Build Nuclear APK
         run: |
           pip install "buildozer==1.5.0" "cython<3.0" virtualenv
-          rm -rf .buildozer
-          
-          # Konfigurasi Gradle untuk memaksa Multidex
           echo "android.useAndroidX=true" > gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
-          
-          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
-          # Langsung jalankan debug agar p4a terinstal bersih
+          echo "android.enableMultiDex=true" >> gradle.properties
           buildozer -v android debug
-        env:
-          yes: y
-
-      - name: Deliver APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: FEAC-SOVEREIGN-FINAL
-          path: bin/*.apk
