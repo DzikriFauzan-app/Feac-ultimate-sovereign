@@ -1,15 +1,38 @@
-from kivy.app import App
-from kivy.uix.label import Label
+import logging
+import traceback
 import os
 
-class FEACApp(App):
-    def build(self):
-        try:
-            # Logika inisialisasi Sovereign
-            return Label(text="FEAC SOVEREIGN\nStatus: Connected to Aries Port 3000")
-        except Exception as e:
-            # Jika API port 3000 mati, aplikasi tetap hidup dan lapor error
-            return Label(text=f"Connection Error: {str(e)}")
+# Konfigurasi Logging agar kita bisa debug lewat logcat
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger("FEAC_SOVEREIGN")
 
-if __name__ == "__main__":
-    FEACApp().run()
+try:
+    from kivy.app import App
+    from kivy.utils import platform
+    from core.engine import NeoEngine
+
+    # Fix Hardcoded Path sesuai Laporan Kedua
+    if platform == 'android':
+        from android.storage import app_storage_path
+        project_root = app_storage_path()
+    else:
+        project_root = os.path.abspath(".")
+
+    class FeacSovereignApp(App):
+        def build(self):
+            try:
+                logger.info(f"Starting NeoEngine at {project_root}")
+                self.engine = NeoEngine(root=project_root)
+                self.engine.start()
+                # Di sini kamu bisa return root widget dashboard kamu
+                return None 
+            except Exception as e:
+                logger.error(f"Engine Failure: {e}")
+                traceback.print_exc()
+
+    if __name__ == "__main__":
+        FeacSovereignApp().run()
+
+except Exception as fatal_e:
+    logger.error(f"FATAL BOOT ERROR: {fatal_e}")
+    traceback.print_exc()
