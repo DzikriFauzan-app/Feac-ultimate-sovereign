@@ -13,7 +13,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Build Frontend Dashboard
+      - name: Build Frontend
         run: |
           cd frontend
           npm install --force
@@ -26,27 +26,31 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Buildozer & System Deps
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
-          # Menghapus package bermasalah dan menginstal yang stabil
           sudo apt-get install -y \
-            build-essential git python3-dev ffmpeg libsdl2-dev libsdl2-image-dev \
-            libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev \
-            libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
-            gstreamer1.0-plugins-base gstreamer1.0-plugins-good libsqlite3-dev \
-            libreadline-dev libffi-dev libssl-dev libbz2-dev libncurses-dev autoconf automake libtool
-          
+            build-essential git python3-dev zip unzip \
+            zlib1g-dev libffi-dev libssl-dev libltdl-dev \
+            libreadline-dev libncurses5-dev libncursesw5-dev \
+            libdb5.3-dev libgdbm-dev libsqlite3-dev libbz2-dev \
+            libexpat1-dev liblzma-dev tk-dev libffi-dev
+
+      - name: Install Buildozer Tooling
+        run: |
           pip install --upgrade pip
-          pip install "buildozer==1.5.0" "Cython<3.0" "virtualenv==20.21.1"
+          pip install "buildozer==1.5.0" "Cython<3.0" "virtualenv"
 
       - name: Build Android APK
         run: |
-          # Auto-fix permissions & paths di buildozer.spec
+          # Perbaikan otomatis buildozer.spec sebelum running
           sed -i 's/android.permissions =.*/android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE,WAKE_LOCK,ACCESS_NETWORK_STATE/' buildozer.spec
           sed -i 's/android.api =.*/android.api = 31/' buildozer.spec
           
-          # Jalankan build dengan auto-accept SDK
+          # Hapus sisa build lama jika ada (Force Clean)
+          buildozer android clean
+          
+          # Jalankan build dengan log sangat detail
           yes | buildozer -v android debug
         env:
           ACCEPT_SDK_LICENSE: "yes"
