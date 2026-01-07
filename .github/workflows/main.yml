@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install System Deps
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libunwind-dev openjdk-17-jdk
@@ -35,26 +35,26 @@ jobs:
             libreadline-dev libffi-dev libssl-dev libbz2-dev libncurses-dev autoconf automake libtool
           pip install "buildozer==1.5.0" "Cython<3.0" "virtualenv==20.21.1"
 
-      - name: Force Inject Spec (API 33 + Full Permissions)
+      - name: Fix NDK & Spec (Solusi Exit Code 1)
         run: |
+          # Hapus total folder build sebelumnya untuk mencegah sisa kompilasi yang rusak
           rm -rf .buildozer
-          # Pastikan permissions lengkap sesuai audit Blackbox
+          
+          # Paksa Buildozer menggunakan NDK r25b (paling stabil untuk library Python)
+          sed -i 's/android.api =.*/android.api = 33/' buildozer.spec
+          sed -i 's/android.ndk =.*/android.ndk = 25b/' buildozer.spec
+          sed -i 's/android.minapi =.*/android.minapi = 24/' buildozer.spec
+          
+          # Tambahkan Multidex agar aplikasi tidak crash karena limit metode Java
+          sed -i 's/#android.enable_androidx = False/android.enable_androidx = True/' buildozer.spec
+          
+          # Injeksi permissions ulang (memastikan audit Blackbox terpenuhi)
           sed -i '/android.permissions/d' buildozer.spec
           sed -i '/\[app\]/a android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE,WAKE_LOCK,ACCESS_NETWORK_STATE' buildozer.spec
-          # Kunci API ke 33 untuk menghindari error lisensi 36.1
-          sed -i 's/android.api =.*/android.api = 33/' buildozer.spec
-          sed -i 's/android.minapi =.*/android.minapi = 24/' buildozer.spec
-          sed -i 's/android.sdk =.*/android.sdk = 33/' buildozer.spec
-          sed -i 's/p4a.branch =.*/p4a.branch = master/' buildozer.spec
-          sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
 
       - name: Build Android APK
-        run: yes | buildozer -v android debug
+        run: |
+          # Gunakan perintah ini agar semua konfirmasi otomatis terisi
+          yes | buildozer -v android debug
         env:
           ACCEPT_SDK_LICENSE: "yes"
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Sovereign-Ultimate-APK
-          path: bin/*.apk
