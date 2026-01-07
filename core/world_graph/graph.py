@@ -19,3 +19,10 @@ class WorldGraph:
             ],
             "edges": list(self.edges)
         }
+def get_node(self, node_id: str):
+    for n in self.nodes:
+        if isinstance(n, dict):
+            if n.get("id") == node_id: return n
+        else:
+            if getattr(n, "id", None) == node_id: return n.serialize()
+    return None
