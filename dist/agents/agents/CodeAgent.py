@@ -3,7 +3,7 @@ import os
 class CodeAgent:
     def __init__(self, agent_manager=None, db=None):
         self.name = "CodeAgent"
-        self.output_dir = "/sdcard/Buku saya/Fauzan engine/NeoEngine/storage/generated_code"
+        self.output_dir = "/data/data/org.feac.ultimate.feac_sovereign/files/NeoEngine/storage/generated_code"
         os.makedirs(self.output_dir, exist_ok=True)
 
     async def execute(self, task_data):

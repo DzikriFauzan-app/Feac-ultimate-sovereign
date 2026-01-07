@@ -1,4 +1,4 @@
-PATH = "/sdcard/Buku saya/Fauzan engine/NeoEngine/agents/RenderAgent.py"
+PATH = "/data/data/org.feac.ultimate.feac_sovereign/files/NeoEngine/agents/RenderAgent.py"
 
 with open(PATH, "r") as f:
     lines = f.readlines()

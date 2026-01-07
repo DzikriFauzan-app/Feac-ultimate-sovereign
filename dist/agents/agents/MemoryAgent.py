@@ -4,7 +4,7 @@ from datetime import datetime
 
 class MemoryAgent:
     def __init__(self, *args, **kwargs):
-        self.base_path = "/sdcard/Buku saya/Fauzan engine/NeoEngine/storage/memory"
+        self.base_path = "/data/data/org.feac.ultimate.feac_sovereign/files/NeoEngine/storage/memory"
         os.makedirs(self.base_path, exist_ok=True)
 
     def encode_memory(self, category, tag, content):

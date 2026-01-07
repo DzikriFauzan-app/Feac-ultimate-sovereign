@@ -4,7 +4,7 @@ import json
 class WorldAgent:
     def __init__(self, bus=None, db=None):
         self.name = "WorldAgent"
-        self.base_path = "/sdcard/Buku saya/Fauzan engine/NeoEngine/storage/world_data"
+        self.base_path = "/data/data/org.feac.ultimate.feac_sovereign/files/NeoEngine/storage/world_data"
         os.makedirs(self.base_path, exist_ok=True)
 
     async def process_task(self, task):

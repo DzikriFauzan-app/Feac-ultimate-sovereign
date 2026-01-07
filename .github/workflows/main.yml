@@ -13,20 +13,9 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Build Frontend
-        run: |
-          cd frontend && npm install --force && npm run build
-          mkdir -p ../dist_sovereign && cp -r dist/* ../dist_sovereign/ || true
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
       - name: Install System Dependencies
         run: |
           sudo apt-get update
-          # Fix -luuid dan Build Tools
           sudo apt-get install -y libunwind-dev openjdk-17-jdk uuid-dev
           sudo apt-get install -y \
             build-essential git python3-dev ffmpeg libsdl2-dev libsdl2-image-dev \
@@ -34,25 +23,30 @@ jobs:
             libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
             gstreamer1.0-plugins-base gstreamer1.0-plugins-good libsqlite3-dev \
             libreadline-dev libffi-dev libssl-dev libbz2-dev libncurses-dev autoconf automake libtool
-          
-          # Kunci Cython ke 0.29.33 agar file .c ter-generate sempurna
           pip install "buildozer==1.5.0" "Cython==0.29.33" "virtualenv==20.21.1"
 
-      - name: Deep Clean & Force Spec
+      - name: Build Frontend
         run: |
-          # Bersihkan cache korup yang menyebabkan buffer.c hilang
+          cd frontend && npm install --force && npm run build
+          mkdir -p ../dist_sovereign && cp -r dist/* ../dist_sovereign/ || true
+
+      - name: Configure Buildozer Spec
+        run: |
           rm -rf .buildozer
-          
-          # Injeksi pengaturan spec yang stabil
+          # Injeksi API 33 & Autopertambah License
           sed -i 's/android.api =.*/android.api = 33/' buildozer.spec
+          sed -i 's/android.sdk =.*/android.sdk = 33/' buildozer.spec
           sed -i 's/android.ndk =.*/android.ndk = 25b/' buildozer.spec
-          sed -i 's/p4a.branch =.*/p4a.branch = master/' buildozer.spec
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
+          
+          # Fix Permissions Lengkap
+          sed -i '/android.permissions/d' buildozer.spec
+          sed -i '/\[app\]/a android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE,WAKE_LOCK,ACCESS_NETWORK_STATE' buildozer.spec
 
       - name: Build Android APK
         run: |
-          # Langsung jalankan buildozer
-          buildozer -v android debug
+          # Gunakan yes untuk force accept license 36.1
+          yes | buildozer -v android debug
         env:
           ACCEPT_SDK_LICENSE: "yes"
 

@@ -5,8 +5,8 @@ from datetime import datetime
 
 class ExportAgent:
     def __init__(self, *args, **kwargs):
-        self.base_dir = "/sdcard/Buku saya/Fauzan engine/NeoEngine/storage"
-        self.export_dir = "/sdcard/Buku saya/Fauzan engine/NeoEngine/exports"
+        self.base_dir = "/data/data/org.feac.ultimate.feac_sovereign/files/NeoEngine/storage"
+        self.export_dir = "/data/data/org.feac.ultimate.feac_sovereign/files/NeoEngine/exports"
         os.makedirs(self.export_dir, exist_ok=True)
 
     def bundle_project(self, project_name):

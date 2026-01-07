@@ -3,7 +3,7 @@ import os
 class PlayStoreAgent:
     def __init__(self):
         self.name = "PlayStoreAgent"
-        self.keystore_path = "/sdcard/Buku saya/Fauzan engine/NeoEngine/keystore/juragan_malam.keystore"
+        self.keystore_path = "/data/data/org.feac.ultimate.feac_sovereign/files/NeoEngine/keystore/juragan_malam.keystore"
 
     async def execute(self, task):
         print(f"📦 [PlayStoreAgent] Preparing Production Bundle: {task.get('project')}")
