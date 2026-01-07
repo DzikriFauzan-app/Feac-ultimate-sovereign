@@ -25,33 +25,18 @@ jobs:
             libreadline-dev libffi-dev libssl-dev libbz2-dev libncurses-dev autoconf automake libtool
           pip install "buildozer==1.5.0" "Cython==0.29.33" "virtualenv==20.21.1"
 
-      - name: Build Frontend
-        run: |
-          cd frontend && npm install --force && npm run build
-          mkdir -p ../dist_sovereign && cp -r dist/* ../dist_sovereign/ || true
-
       - name: Configure Buildozer Spec
         run: |
           rm -rf .buildozer
-          # Paksa ke API 33 agar tidak menyentuh fitur API 34/36 yang belum stabil di Kivy
           sed -i 's/android.api =.*/android.api = 33/' buildozer.spec
           sed -i 's/android.sdk =.*/android.sdk = 33/' buildozer.spec
           sed -i 's/android.ndk =.*/android.ndk = 25b/' buildozer.spec
-          sed -i 's/android.build_tools_ver =.*/android.build_tools_ver = 33.0.1/' buildozer.spec
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
-          
-          # Fix Permissions
-          sed -i '/android.permissions/d' buildozer.spec
-          sed -i '/\[app\]/a android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE,WAKE_LOCK,ACCESS_NETWORK_STATE' buildozer.spec
 
       - name: Build Android APK
         run: |
-          # INJEKSI LISENSI MANUAL (Solusi Error 36.1 & Broken Pipe)
           mkdir -p /home/runner/.buildozer/android/platform/android-sdk/licenses
-          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55\nd56239c052ad80311597d2190c1223c65030e57\n24333f8a63b682569cc4829773c05e5410c1ff11" > /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
-          
-          # Jalankan build dengan log level 2 untuk detail maksimal
+          echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55\nd56239c052ad80311597d2190c1223c65030e57" > /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
           buildozer -v android debug
         env:
           ACCEPT_SDK_LICENSE: "yes"
