@@ -26,7 +26,7 @@ jobs:
       - name: Install System Dependencies
         run: |
           sudo apt-get update
-          # Tambahan uuid-dev untuk mengatasi error -luuid
+          # Fix -luuid dan Build Tools
           sudo apt-get install -y libunwind-dev openjdk-17-jdk uuid-dev
           sudo apt-get install -y \
             build-essential git python3-dev ffmpeg libsdl2-dev libsdl2-image-dev \
@@ -34,21 +34,24 @@ jobs:
             libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0-dev \
             gstreamer1.0-plugins-base gstreamer1.0-plugins-good libsqlite3-dev \
             libreadline-dev libffi-dev libssl-dev libbz2-dev libncurses-dev autoconf automake libtool
-          # Kunci Cython ke versi 0.29.33 (paling stabil untuk Kivy agar file .c tercipta sempurna)
+          
+          # Kunci Cython ke 0.29.33 agar file .c ter-generate sempurna
           pip install "buildozer==1.5.0" "Cython==0.29.33" "virtualenv==20.21.1"
 
-      - name: Deep Clean & Fix Spec
+      - name: Deep Clean & Force Spec
         run: |
+          # Bersihkan cache korup yang menyebabkan buffer.c hilang
           rm -rf .buildozer
-          # Pastikan android.api tetap 33 untuk stabilitas
+          
+          # Injeksi pengaturan spec yang stabil
           sed -i 's/android.api =.*/android.api = 33/' buildozer.spec
-          sed -i 's/android.sdk =.*/android.sdk = 33/' buildozer.spec
           sed -i 's/android.ndk =.*/android.ndk = 25b/' buildozer.spec
+          sed -i 's/p4a.branch =.*/p4a.branch = master/' buildozer.spec
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
 
       - name: Build Android APK
         run: |
-          # Jalankan tanpa 'yes |' di awal untuk melihat jika ada prompt manual yang menghambat
+          # Langsung jalankan buildozer
           buildozer -v android debug
         env:
           ACCEPT_SDK_LICENSE: "yes"
