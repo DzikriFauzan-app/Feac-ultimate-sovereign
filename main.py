@@ -1,21 +1,38 @@
 from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
-from agents.render_kernel_bridge import render_headless
-import logging
+from kivy.uix.scrollview import ScrollView
+from core.render_kernel.abi import RenderABI
+from agents.BaseAgent import BaseAgent
 
-class NeoEngineApp(App):
+class SovereignApp(App):
     def build(self):
-        try:
-            result = render_headless(
-                pipeline="deferred_pbr_sovereign", 
-                passes=["gbuffer", "lighting", "post"]
-            )
-            return Label(
-                text=f"NEOENGINE ONLINE\nStatus: {result['mode']}\nPipeline: {result['pipeline']}\nGraph: VALID",
-                halign='center', font_size='14sp'
-            )
-        except Exception as e:
-            return Label(text=f"KERNEL ERROR: {str(e)}", color=(1,0,0,1))
+        wg = BaseAgent._world_graph
+        
+        # Trigger event awal sebagai tanda boot
+        BaseAgent.emit_kernel_event("SovereignSystem", "BOOT", {"status": "SUCCESS"})
+        
+        manifest = RenderABI.create_manifest("SOVEREIGN_DEBUG_PIPELINE", wg)
+        
+        root = BoxLayout(orientation='vertical', padding=10)
+        header = Label(text="NEOENGINE KERNEL v1.1", size_hint_y=0.1, bold=True, color=(0, 1, 0, 1))
+        
+        content = ScrollView()
+        log_label = Label(
+            text=f"PIPELINE: {manifest['pipeline']}\n"
+                 f"NODES IN GRAPH: {manifest['world_state']['nodes']}\n"
+                 f"LATEST SNAPSHOT:\n{manifest['graph_snapshot']}",
+            size_hint_y=None,
+            halign='left',
+            valign='top'
+        )
+        log_label.bind(texture_size=log_label.setter('size'))
+        
+        content.add_widget(log_label)
+        root.add_widget(header)
+        root.add_widget(content)
+        
+        return root
 
 if __name__ == "__main__":
-    NeoEngineApp().run()
+    SovereignApp().run()
