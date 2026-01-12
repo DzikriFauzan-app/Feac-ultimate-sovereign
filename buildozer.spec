@@ -1,14 +1,30 @@
 [app]
-title = Feac Sovereign
-package.name = feac_sovereign
-package.domain = org.feac.ultimate
-source.dir = dist/agents
-source.include_exts = py,png,jpg,json,db,yaml,sh,txt,glsl,vert,frag
+title = FEAC Ultimate
+package.name = feac_ultimate
+package.domain = id.sovereign
+source.dir = .
+source.include_exts = py,png,jpg,kv,atlas,json
 version = 1.0.0
-requirements = python3,kivy==2.2.1,pillow,requests,fastapi,uvicorn,python-socketio,websocket-client,colorama,psutil,sqlite3
+
+# (Requirements) - Pastikan kivy masuk
+requirements = python3,kivy==2.2.1,kivymd,requests,urllib3
+
 orientation = portrait
-permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
-android.api = 31
+fullscreen = 1
+android.archs = arm64-v8a, armeabi-v7a
+android.allow_backup = True
+
+# (Android SDK/NDK) - Kunci versi agar stabil
+android.api = 33
 android.minapi = 21
-android.archs = armeabi-v7a, arm64-v8a
-android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE,WAKE_LOCK,ACCESS_NETWORK_STATE
+android.sdk = 33
+android.ndk = 25b
+android.ndk_path = 
+android.sdk_path = 
+
+# (Permissions)
+android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE
+
+# (Buildozer Config)
+log_level = 2
+warn_on_root = 1
