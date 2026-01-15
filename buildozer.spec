@@ -7,7 +7,7 @@ source.include_exts = py,png,jpg,kv,atlas,json
 version = 1.0.0
 
 # (Requirements) - Pastikan kivy masuk
-requirements = python3,kivy==2.2.1,kivymd,requests,urllib3,certifi,charset-normalizer,idna
+requirements = python3,kivy==2.2.1,kivymd,requests,urllib3,certifi,charset-normalizer,idna,pillow
 
 orientation = portrait
 fullscreen = 1
