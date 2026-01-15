@@ -7,7 +7,7 @@ source.include_exts = py,png,jpg,kv,atlas,json
 version = 1.0.0
 
 # (Requirements) - Pastikan kivy masuk
-requirements = python3,kivy==2.2.1,kivymd,requests,urllib3
+requirements = python3,kivy==2.2.1,kivymd,requests,urllib3,certifi,charset-normalizer,idna
 
 orientation = portrait
 fullscreen = 1
@@ -16,8 +16,7 @@ android.allow_backup = True
 
 # (Android SDK/NDK) - Kunci versi agar stabil
 android.api = 33
-android.minapi = 21
-android.sdk = 33
+android.minapi = 24
 android.ndk = 25b
 android.ndk_path = 
 android.sdk_path = 
