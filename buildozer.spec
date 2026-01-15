@@ -11,7 +11,7 @@ requirements = python3,kivy==2.2.1,kivymd,requests,urllib3,certifi,charset-norma
 
 orientation = portrait
 fullscreen = 1
-android.archs = arm64-v8a, armeabi-v7a
+android.archs = arm64-v8a,armeabi-v7a
 android.allow_backup = True
 
 # (Android SDK/NDK) - Kunci versi agar stabil
