@@ -26,21 +26,19 @@ jobs:
       - name: Install Buildozer & Cython
         run: pip install buildozer cython==0.29.33
 
-      - name: Setup Android SDK & Accept Licenses
+      - name: Pre-configure Android SDK
         run: |
-          # Buat struktur direktori yang dipahami Buildozer
-          mkdir -p $HOME/.android
-          touch $HOME/.android/repositories.cfg
+          # Buat simbolik link agar Buildozer menemukan sdkmanager di tempat yang dia harapkan
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk/tools/bin
+          ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
           
-          # Gunakan sdkmanager bawaan GitHub runner untuk menginstal komponen
-          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-          
-          # Paksa terima lisensi
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          # Paksa terima lisensi melalui jalur resmi GitHub Runner
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME --licenses || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-34" "build-tools;34.0.0"
 
       - name: Build APK
         run: |
-          # Beritahu Buildozer lokasi SDK yang sudah kita siapkan
+          # Paksa Buildozer menggunakan SDK dan NDK yang sudah terpasang
           export APP_ANDROID_SDK=$ANDROID_HOME
           export APP_ANDROID_NDK=$ANDROID_HOME/ndk-bundle
           buildozer -v android debug
