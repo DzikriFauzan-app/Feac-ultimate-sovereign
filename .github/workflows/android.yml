@@ -7,6 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # 1. FIX JAVA: Wajib Java 17 untuk Android API 34
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -26,21 +27,28 @@ jobs:
       - name: Install Buildozer & Cython
         run: pip install buildozer cython==0.29.33
 
-      - name: Pre-configure Android SDK
+      # 2. FIX SDK PATH BLINDNESS (Operasi Kunci)
+      - name: Fix Android SDK Layout
         run: |
-          # Buat simbolik link agar Buildozer menemukan sdkmanager di tempat yang dia harapkan
-          mkdir -p $HOME/.buildozer/android/platform/android-sdk/tools/bin
-          ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
+          # Buat folder 'tools/bin' buatan agar Buildozer senang
+          mkdir -p $ANDROID_HOME/tools/bin
           
-          # Paksa terima lisensi melalui jalur resmi GitHub Runner
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME --licenses || true
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-34" "build-tools;34.0.0"
+          # Buat Symlink: Arahkan tools/bin/sdkmanager ke cmdline-tools/latest/bin/sdkmanager
+          # Ini menipu Buildozer agar mengira dia memakai struktur lama
+          ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
+          
+          # Terima lisensi secara paksa
+          yes | sdkmanager --licenses || true
+          
+          # Install build-tools spesifik
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
       - name: Build APK
         run: |
-          # Paksa Buildozer menggunakan SDK dan NDK yang sudah terpasang
+          # Paksa Buildozer memakai SDK sistem yang sudah kita modifikasi
           export APP_ANDROID_SDK=$ANDROID_HOME
           export APP_ANDROID_NDK=$ANDROID_HOME/ndk-bundle
+          
           buildozer -v android debug
         env:
           BUILDOZER_ACCEPT_SDK_LICENSE: 1
