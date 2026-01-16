@@ -1,4 +1,4 @@
-name: FEAC Ultimate Build
+name: Android Build Sovereign
 on: [push]
 
 jobs:
@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1. SETUP LINGKUNGAN TANPA KONFLIK
+      # 1. SETUP JAVA 17 (Wajib untuk API 34)
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -27,28 +27,30 @@ jobs:
       - name: Install Buildozer & Cython
         run: pip install buildozer cython==0.29.33
 
-      # 2. INJEKSI JALUR SDK (Menghindari Path Blindness)
-      - name: Patch Buildozer Spec
+      # 2. OPERASI SHADOW LINK (Memperbaiki Error SDK Path)
+      - name: Fix Android SDK Path
         run: |
-          # Pastikan file spec ada, jika tidak, buat baru
-          if [ ! -f buildozer.spec ]; then buildozer init; fi
+          # Buat struktur folder yang dicari Buildozer secara paksa
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk/tools/bin
           
-          # Paksa Buildozer memakai jalur SDK sistem agar tidak download ulang
-          sed -i 's/^#\? \?android.sdk =.*/android.sdk = \/usr\/local\/lib\/android\/sdk/' buildozer.spec
-          sed -i 's/^#\? \?android.ndk =.*/android.ndk = \/usr\/local\/lib\/android\/sdk\/ndk-bundle/' buildozer.spec
-          sed -i 's/^#\? \?android.accept_sdk_license =.*/android.accept_sdk_license = True/' buildozer.spec
-          sed -i 's/^#\? \?android.api =.*/android.api = 34/' buildozer.spec
+          # Hubungkan sdkmanager modern ke lokasi folder purba
+          ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
           
-          # Terima lisensi secara sistem
+          # Terima semua lisensi secara sistem
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME --licenses || true
 
-      # 3. EKSEKUSI BUILD MURNI
+      # 3. EKSEKUSI BUILD
       - name: Build with Buildozer
-        run: buildozer -v android debug
+        run: |
+          # Beritahu Buildozer lokasi SDK asli milik GitHub Runner
+          export APP_ANDROID_SDK=$ANDROID_HOME
+          export APP_ANDROID_NDK=$ANDROID_HOME/ndk-bundle
+          buildozer -v android debug
         env:
+          BUILDOZER_ACCEPT_SDK_LICENSE: 1
           BUILDOZER_WARN_ON_ROOT: 0
 
-      # 4. FIX ARTIFACT V4 (Wajib)
+      # 4. UPLOAD ARTIFACT V4 (Wajib 2024/2025)
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
