@@ -1,58 +1,27 @@
-name: FEAC Ultimate Build
+name: FEAC Sovereign Docker Build
 on: [push]
 
 jobs:
-  build:
+  docker-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Langkah 1: Checkout Code (V4)
+      - name: Checkout Source
+        uses: actions/checkout@v4
 
-      # 1. SETUP LINGKUNGAN (Wajib Java 17 untuk Android modern)
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      # Langkah 2: Build dalam Container (Mengabaikan environment Runner yang rusak)
+      - name: Build with Buildozer Docker
+        uses: ArtemSerebriakov/buildozer-action@v1
+        id: buildozer
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          command: buildozer -v android debug
+          buildozer_version: master
+          repository_root: .
 
-      - name: Install System Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential git python3-dev libffi-dev libssl-dev zlib1g-dev libltdl-dev zip unzip
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install Buildozer & Cython
-        run: pip install buildozer cython==0.29.33
-
-      # 2. OPERASI TRANSPLANTASI SDK (Solusi Error sdkmanager not found)
-      - name: Fix Android SDK Path Blindness
-        run: |
-          # Buat struktur folder 'purba' yang dicari Buildozer di dalam home runner
-          mkdir -p $HOME/.buildozer/android/platform/android-sdk/tools/bin
-          
-          # Hubungkan (Symlink) sdkmanager modern ke lokasi purba tersebut
-          ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
-          
-          # Pastikan lisensi diterima di lokasi asli sistem
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME --licenses || true
-
-      # 3. EKSEKUSI BUILD DENGAN OVERRIDE JALUR SISTEM
-      - name: Build with Buildozer
-        run: |
-          # Paksa Buildozer untuk melihat SDK sistem, bukan mendownload sendiri
-          export APP_ANDROID_SDK=$ANDROID_HOME
-          export APP_ANDROID_NDK=$ANDROID_HOME/ndk-bundle
-          buildozer -v android debug
-        env:
-          BUILDOZER_ACCEPT_SDK_LICENSE: 1
-          BUILDOZER_WARN_ON_ROOT: 0
-
-      # 4. ARTIFACT UPLOAD (V4)
+      # Langkah 3: Upload Artifact (V4 - Wajib)
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: FEAC-Ultimate-APK
           path: bin/*.apk
+          compression-level: 0
