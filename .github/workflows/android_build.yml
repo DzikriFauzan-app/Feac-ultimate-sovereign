@@ -22,7 +22,6 @@ jobs:
         with:
           python-version: '3.10'
 
-      # FIX: Menggabungkan update dan install dalam satu baris untuk mencegah error shell
       - name: Install System Dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential git ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev autoconf libtool pkg-config libncurses-dev cmake libffi-dev libssl-dev
 
@@ -30,6 +29,12 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install buildozer cython
+
+      # PERBAIKAN PENTING: Memaksa Buildozer menerima lisensi SDK agar download Build-Tools jalan
+      - name: Patch buildozer.spec for Auto-Accept Licenses
+        run: |
+          # Ubah baris android.accept_sdk_license menjadi True (apa pun kondisinya sebelumnya)
+          sed -i 's/android.accept_sdk_license.*/android.accept_sdk_license = True/' buildozer.spec
 
       - name: Force Clean Buildozer Cache
         run: rm -rf .buildozer
