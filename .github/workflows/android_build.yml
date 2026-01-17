@@ -30,11 +30,9 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython
 
-      # PERBAIKAN PENTING: Memaksa Buildozer menerima lisensi SDK agar download Build-Tools jalan
-      - name: Patch buildozer.spec for Auto-Accept Licenses
-        run: |
-          # Ubah baris android.accept_sdk_license menjadi True (apa pun kondisinya sebelumnya)
-          sed -i 's/android.accept_sdk_license.*/android.accept_sdk_license = True/' buildozer.spec
+      # PERBAIKAN: Paksa tambahkan baris lisensi ke baris terakhir buildozer.spec
+      - name: Force Append License to buildozer.spec
+        run: echo "android.accept_sdk_license = True" >> buildozer.spec
 
       - name: Force Clean Buildozer Cache
         run: rm -rf .buildozer
