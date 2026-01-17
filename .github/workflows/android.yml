@@ -2,14 +2,15 @@ name: FEAC Sovereign Docker Build
 on: [push]
 
 jobs:
-  docker-build:
+  build:
     runs-on: ubuntu-latest
     steps:
-      # Langkah 1: Checkout Code (V4)
+      # Langkah 1: Checkout Code (Wajib v4)
       - name: Checkout Source
         uses: actions/checkout@v4
 
-      # Langkah 2: Build dalam Container (Mengabaikan environment Runner yang rusak)
+      # Langkah 2: Build menggunakan Docker Action
+      # Ini otomatis menangani Java, SDK, dan NDK tanpa pusing path
       - name: Build with Buildozer Docker
         uses: ArtemSerebriakov/buildozer-action@v1
         id: buildozer
@@ -17,8 +18,9 @@ jobs:
           command: buildozer -v android debug
           buildozer_version: master
           repository_root: .
+          workdir: .
 
-      # Langkah 3: Upload Artifact (V4 - Wajib)
+      # Langkah 3: Upload Artifact (Wajib v4)
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
