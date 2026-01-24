@@ -1,0 +1,21 @@
+#!/bin/bash
+# CALL ARIES V30 - NEURAL INTERFACE PRO + AUDIO
+BRIDGE_URL="http://localhost:3333"
+
+QUERY="$*"
+if [[ -z "$QUERY" ]]; then
+    echo -e "\e[1;34m🧠 [ARIES-PRO]:\e[0m Sovereign Dzikri, Intelligence Core V30 siap."
+else
+    RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" \
+    -d "{\"cmd\":\"$QUERY\", \"auth\":\"Dzikri\", \"mode\":\"PRO_INTELLIGENCE\"}" \
+    "$BRIDGE_URL/execute")
+    
+    echo -e "\e[1;32m⚡ [NEURAL_RESPONSE]:\e[0m"
+    echo "$RESPONSE" | python3 -m json.tool 2>/dev/null || echo "$RESPONSE"
+
+    # Audio Feedback (Memerlukan termux-api)
+    DETAILS=$(echo "$RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('details', ''))" 2>/dev/null)
+    if [[ ! -z "$DETAILS" ]]; then
+        termux-tts-speak "$DETAILS"
+    fi
+fi

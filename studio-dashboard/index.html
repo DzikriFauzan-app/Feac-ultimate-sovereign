@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FEAC Sovereign</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { margin:0; background:#000; color:#eee; height:100vh; overflow:hidden }
+#sidebar { width:260px; background:#050508; border-right:1px solid #1a1a2e }
+.menu-item { padding:12px; cursor:pointer; font-size:11px }
+.menu-item:hover { background:#1a1a2e }
+.active { color:#a855f7 }
+</style>
+</head>
+
+<body class="flex">
+
+<aside id="sidebar" class="flex flex-col">
+  <div class="p-4 text-xs tracking-widest text-purple-500">ARIES SOVEREIGN</div>
+  <div class="menu-item active" onclick="loadView('dashboard')">Dashboard</div>
+  <div class="menu-item" onclick="loadView('chat')">Aries Brain</div>
+  <div class="menu-item" onclick="loadView('repo')">Repo Scanner</div>
+  <div class="menu-item" onclick="loadView('grid')">Neo Grid</div>
+  <div class="menu-item" onclick="loadView('bridge')">Engine Bridge</div>
+  <div class="menu-item" onclick="loadView('shell')">Termux Shell</div>
+  <div class="menu-item" onclick="loadView('billing')">Billing</div>
+  <div class="menu-item" onclick="loadView('upgrade')">Upgrade</div>
+  <div class="menu-item" onclick="loadView('emergency')">Emergency</div>
+  <div class="menu-item" onclick="loadView('settings')">Settings</div>
+</aside>
+
+<main id="viewport" class="flex-1 flex items-center justify-center text-zinc-700">
+  Loading...
+</main>
+
+<script>
+async function loadView(view) {
+  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const res = await fetch('/dashboard/' + view + '.html');
+  document.getElementById('viewport').innerHTML = await res.text();
+}
+
+window.onload = () => loadView('dashboard');
+</script>
+
+</body>
+</html>
