@@ -7,7 +7,6 @@ exports.NeoAdapter = void 0;
 const axios_1 = __importDefault(require("axios"));
 const feacLogger_1 = require("../utils/feacLogger");
 class NeoAdapter {
-    static NEO_URL = "http://10.159.189.152:5000/render";
     static async dispatchRenderTask(taskId, payload) {
         (0, feacLogger_1.feacLog)("BRIDGE", `Connecting to Neo Engine for Task: ${taskId}`);
         try {
@@ -25,3 +24,4 @@ class NeoAdapter {
     }
 }
 exports.NeoAdapter = NeoAdapter;
+NeoAdapter.NEO_URL = "http://10.159.189.152:5000/render";

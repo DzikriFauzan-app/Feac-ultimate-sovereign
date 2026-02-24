@@ -7,7 +7,9 @@ exports.StorageManager = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 class StorageManager {
-    basePath = path_1.default.join(__dirname, '../../data/artifacts');
+    constructor() {
+        this.basePath = path_1.default.join(__dirname, '../../data/artifacts');
+    }
     save(artifact) {
         const filePath = path_1.default.join(this.basePath, artifact.name);
         fs_1.default.writeFileSync(filePath, artifact.content);

@@ -9,8 +9,10 @@ var SystemState;
     SystemState["CRITICAL"] = "CRITICAL";
 })(SystemState || (exports.SystemState = SystemState = {}));
 class Consciousness {
-    state = SystemState.IDLE;
-    lastPulse = Date.now();
+    constructor() {
+        this.state = SystemState.IDLE;
+        this.lastPulse = Date.now();
+    }
     updateState(newState) {
         this.state = newState;
         this.lastPulse = Date.now();

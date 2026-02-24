@@ -1,0 +1,4 @@
+AI RULE:
+- EXIT != 0 → DILARANG menyarankan build
+- EXIT 3/4 → WAJIB fokus perbaikan konfigurasi
+- EXIT 0 → BOLEH diskusi lanjutan

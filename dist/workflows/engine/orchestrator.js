@@ -3,7 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WorkflowOrchestrator = void 0;
 const feacLogger_1 = require("../../utils/feacLogger");
 class WorkflowOrchestrator {
-    pipeline = [];
+    constructor() {
+        this.pipeline = [];
+    }
     addStep(step) {
         this.pipeline.push(step);
         return this;

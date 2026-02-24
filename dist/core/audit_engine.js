@@ -8,7 +8,9 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const feacLogger_1 = require("../utils/feacLogger");
 class AuditEngine {
-    logPath = path_1.default.join(process.cwd(), 'data/logs/feac_system.log');
+    constructor() {
+        this.logPath = path_1.default.join(process.cwd(), 'data/logs/feac_system.log');
+    }
     generateReport() {
         (0, feacLogger_1.feacLog)("AUDIT", "Generating System Health Report...");
         const logs = fs_1.default.readFileSync(this.logPath, 'utf-8').split('\n');

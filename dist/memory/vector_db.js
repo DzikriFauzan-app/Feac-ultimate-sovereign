@@ -8,8 +8,8 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const feacLogger_1 = require("../utils/feacLogger");
 class VectorDB {
-    storagePath = path_1.default.join(process.cwd(), 'data/vault/memory.json');
     constructor() {
+        this.storagePath = path_1.default.join(process.cwd(), 'data/vault/memory.json');
         if (!fs_1.default.existsSync(path_1.default.dirname(this.storagePath))) {
             fs_1.default.mkdirSync(path_1.default.dirname(this.storagePath), { recursive: true });
         }

@@ -2,7 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sfx = void 0;
 class SovereignSound {
-    ctx = null;
+    constructor() {
+        this.ctx = null;
+    }
     init() {
         if (!this.ctx)
             this.ctx = new (window.AudioContext || window.webkitAudioContext)();

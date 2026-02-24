@@ -2,11 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Governor = void 0;
 class Governor {
-    policy = {
-        allowDeployment: true,
-        allowCodeMutation: true,
-        maxComputePower: 100
-    };
+    constructor() {
+        this.policy = {
+            allowDeployment: true,
+            allowCodeMutation: true,
+            maxComputePower: 100
+        };
+    }
     validateAction(actionType) {
         console.log(`[GOVERNOR] Validating action: ${actionType}`);
         // Logika pengecekan kebijakan ketat
